@@ -17,14 +17,12 @@
         "concurrently": "^9.0.1",
         "laravel-vite-plugin": "^2.0.0",
         "postcss": "^8.4.31",
-        "react": "^18.2.0",
-        "react-dom": "^18.2.0",
+        "react": "^19.1.1",
+        "react-dom": "^19.1.1",
         "tailwindcss": "^3.2.1",
         "vite": "^7.0.4"
     },
     "dependencies": {
-        "@vitejs/plugin-react": "^5.0.3",
-        "react": "^19.1.1",
-        "react-dom": "^19.1.1"
+        "@vitejs/plugin-react": "^5.0.3"
     }
 }
