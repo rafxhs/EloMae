@@ -18,5 +18,13 @@
     </head>
     <body class="font-sans antialiased">
         @inertia
+
+
+        <!-- VLibras -->
+        <script src="{{ asset('/js/vlibras.js') }}"></script>
+        <script>
+            new window.VLibras.Widget('https://vlibras.gov.br/app');
+        </script>
+
     </body>
 </html>
