@@ -1,5 +1,4 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-
 import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
@@ -9,6 +8,8 @@ import iconUrl from "leaflet/dist/images/marker-icon.png";
 import iconRetinaUrl from "leaflet/dist/images/marker-icon-2x.png";
 import shadowUrl from "leaflet/dist/images/marker-shadow.png";
 
+import Search from "@/Components/Search"; // ✅ novo componente
+
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl,
@@ -17,6 +18,8 @@ L.Icon.Default.mergeOptions({
 });
 
 export default function Mapa() {
+  const [filtro, setFiltro] = useState("Todos");
+  const [locais, setLocais] = useState([]);
   const [pos, setPos] = useState(null);
 
   useEffect(() => {
@@ -32,30 +35,43 @@ export default function Mapa() {
     }
   }, []);
 
+  const locaisFiltrados =
+    filtro === "Todos" ? locais : locais.filter((l) => l.tipo === filtro);
+
+  if (!pos) {
+    return (
+      <AuthenticatedLayout
+        header={
+          <h2 className="text-xl font-semibold leading-tight text-gray-800">
+            Mapa Locais de Apoio
+          </h2>
+        }
+      >
+        <div className="flex items-center justify-center h-[500px] w-full">
+          <span>Obtendo sua localização...</span>
+        </div>
+      </AuthenticatedLayout>
+    );
+  }
+
   return (
     <AuthenticatedLayout
-      header={
-        <h2 className="text-xl font-semibold leading-tight text-gray-800">
-              Mapa Locais de Apoio
-        </h2>
-        }>
+      header={<Search filtro={filtro} setFiltro={setFiltro} />} 
+    >
+      <MapContainer
+        center={pos}
+        zoom={13}
+        className="h-[500px] w-full rounded-lg shadow-lg"
+      >
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
+        />
 
-        <MapContainer
-          center={pos || [-8.0476, -34.8770]} // fallback Recife
-          zoom={13}
-          className="h-[500px] w-full rounded-lg shadow-lg"
-        >
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
-          />
-
-          {pos && (
-            <Marker position={pos}>
-              <Popup>Você está aqui</Popup>
-            </Marker>
-          )}
-        </MapContainer>
+        <Marker position={pos}>
+          <Popup>Você está aqui</Popup>
+        </Marker>
+      </MapContainer>
     </AuthenticatedLayout>
   );
 }

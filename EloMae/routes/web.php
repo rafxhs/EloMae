@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Models\Institutions;
+use App\Http\Controllers\InstitutionsController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -27,5 +29,7 @@ Route::middleware('auth')->group(function () {
 Route::get('/mapa', function () {
     return Inertia::render('Map/Index');
 })->name('mapa');
+
+Route::apiResource('locais', InstitutionsController::class);
 
 require __DIR__.'/auth.php';
