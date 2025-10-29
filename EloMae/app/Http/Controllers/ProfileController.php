@@ -2,62 +2,83 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfileUpdateRequest;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
-use Inertia\Response;
 
 class ProfileController extends Controller
 {
     /**
-     * Display the user's profile form.
+     * Mostrar o formulário de edição do perfil (Inertia)
      */
-    public function edit(Request $request): Response
+    public function edit(Request $request)
     {
+        $user = $request->user()->load('address');
+
+        // passe dados que seu UpdateProfileInformation.jsx espera
+        // mustVerifyEmail e status são usados no template original do Jetstream
+        $mustVerifyEmail = method_exists($user, 'hasVerifiedEmail') && !$user->hasVerifiedEmail();
+        $status = session('status');
+
         return Inertia::render('Profile/Edit', [
-            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
-            'status' => session('status'),
+            'mustVerifyEmail' => $mustVerifyEmail,
+            'status' => $status,
+            'auth' => [
+                'user' => $user,
+            ],
         ]);
     }
 
     /**
-     * Update the user's profile information.
+     * Atualizar perfil e endereço (PATCH /profile)
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(Request $request)
     {
-        $request->user()->fill($request->validated());
-
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
-        }
-
-        $request->user()->save();
-
-        return Redirect::route('profile.edit');
-    }
-
-    /**
-     * Delete the user's account.
-     */
-    public function destroy(Request $request): RedirectResponse
-    {
-        $request->validate([
-            'password' => ['required', 'current_password'],
-        ]);
-
         $user = $request->user();
 
-        Auth::logout();
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => [
+                'required', 'string', 'email', 'max:255',
+                Rule::unique('users')->ignore($user->id),
+            ],
+            'birth_date' => ['nullable', 'date', 'before:today'],
+            'children_count' => ['required', 'integer', 'min:0', 'max:20'],
+            'government_beneficiary' => ['sometimes', 'boolean'],
 
-        $user->delete();
+            // campos aninhados address.*
+            'address.street' => ['nullable', 'string', 'max:255'],
+            'address.neighborhood' => ['nullable', 'string', 'max:255'],
+            'address.city' => ['nullable', 'string', 'max:255'],
+            'address.state' => ['nullable', 'string', 'max:255'],
+            'address.zip' => ['nullable', 'string', 'max:30'],
+        ]);
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        // Atualizar usuário
+        $user->fill([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'birth_date' => $validated['birth_date'] ?? null,
+            'children_count' => $validated['children_count'] ?? 0,
+            'government_beneficiary' => isset($validated['government_beneficiary']) ? (bool)$validated['government_beneficiary'] : false,
+        ]);
+        $user->save();
 
-        return Redirect::to('/');
+        // Tratar endereço
+        $addressData = $validated['address'] ?? [];
+        // remover valores vazios
+        $addressData = array_filter($addressData, function ($v) {
+            return $v !== null && $v !== '';
+        });
+
+        if (!empty($addressData)) {
+            $user->address()->updateOrCreate(
+                ['user_id' => $user->id],
+                $addressData
+            );
+        }
+
+        return back(303)->with('status', 'profile-updated');
     }
 }
