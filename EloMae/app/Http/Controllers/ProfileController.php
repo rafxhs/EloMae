@@ -14,7 +14,7 @@ class ProfileController extends Controller
      */
     public function edit(Request $request)
     {
-        $user = $request->user()->load('address');
+        $user = $request->user()->load('address', 'dependents');
 
         // passe dados que seu UpdateProfileInformation.jsx espera
         // mustVerifyEmail e status são usados no template original do Jetstream
@@ -40,7 +40,10 @@ class ProfileController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => [
-                'required', 'string', 'email', 'max:255',
+                'required',
+                'string',
+                'email',
+                'max:255',
                 Rule::unique('users')->ignore($user->id),
             ],
             'birth_date' => ['nullable', 'date', 'before:today'],
@@ -77,6 +80,23 @@ class ProfileController extends Controller
                 ['user_id' => $user->id],
                 $addressData
             );
+        }
+
+
+        // Atualizar dependentes
+        $dependents = $request->input('dependents', []);
+
+        // Limpar dependentes antigos e recriar todos
+        $user->dependents()->delete();
+
+        foreach ($dependents as $dependent) {
+            if (!empty($dependent['name'])) {
+                $user->dependents()->create([
+                    'name' => $dependent['name'],
+                    'birth_date' => $dependent['birth_date'] ?? null,
+                    'gender' => $dependent['gender'] ?? null,
+                ]);
+            }
         }
 
         return back(303)->with('status', 'profile-updated');

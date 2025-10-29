@@ -6,13 +6,14 @@ import TextInput from '@/Components/TextInput';
 import { Transition } from '@headlessui/react';
 import { Link, useForm, usePage } from '@inertiajs/react';
 
-export default function UpdateProfileInformation({
+export default function UpdateProfileInformationForm({
     mustVerifyEmail,
     status,
     className = '',
 }) {
     const user = usePage().props.auth.user || {};
     const existingAddress = user.address || {};
+    const existingDependents = user.dependents || [];
 
     const { data, setData, patch, errors, processing, recentlySuccessful } =
         useForm({
@@ -21,6 +22,15 @@ export default function UpdateProfileInformation({
             birth_date: user.birth_date ? user.birth_date.substring(0, 10) : '',
             children_count: user.children_count ?? 0,
             government_beneficiary: !!user.government_beneficiary,
+            // dependents é um array de objetos { name, birth_date, gender }
+            dependents:
+                existingDependents.length > 0
+                    ? existingDependents.map((d) => ({
+                          name: d.name || '',
+                          birth_date: d.birth_date ? d.birth_date.substring(0, 10) : '',
+                          gender: d.gender || '',
+                      }))
+                    : [],
             address: {
                 zip: existingAddress.zip || '',
                 street: existingAddress.street || '',
@@ -34,8 +44,29 @@ export default function UpdateProfileInformation({
     const [cepLoading, setCepLoading] = useState(false);
     const [cepError, setCepError] = useState('');
 
+    // Sincroniza o número de dependentes com children_count:
+    // se children_count aumentar, adiciona objetos vazios; se diminuir, corta o array.
+    useEffect(() => {
+        const count = Number(data.children_count) || 0;
+        const current = Array.isArray(data.dependents) ? data.dependents.slice() : [];
+        if (current.length < count) {
+            // adicionar dependentes vazios
+            const toAdd = count - current.length;
+            for (let i = 0; i < toAdd; i++) {
+                current.push({ name: '', birth_date: '', gender: '' });
+            }
+            setData('dependents', current);
+        } else if (current.length > count) {
+            // remover excedentes
+            current.length = count;
+            setData('dependents', current);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [data.children_count]); // só roda quando children_count muda
+
     const submit = (e) => {
         e.preventDefault();
+        // Envia os dados para profile.update (rota existente)
         patch(route('profile.update'));
     };
 
@@ -90,12 +121,19 @@ export default function UpdateProfileInformation({
         }
     };
 
+    // Helpers para atualizar dependentes imutavelmente
+    const updateDependentField = (index, field, value) => {
+        const list = Array.isArray(data.dependents) ? [...data.dependents] : [];
+        list[index] = { ...(list[index] || { name: '', birth_date: '', gender: '' }), [field]: value };
+        setData('dependents', list);
+    };
+
     return (
         <section className={className}>
             <header>
                 <h2 className="text-lg font-medium text-gray-900">Informações do Perfil</h2>
                 <p className="mt-1 text-sm text-gray-600">
-                    Atualize seus dados pessoais e endereço.
+                    Atualize seus dados pessoais, endereço e dependentes.
                 </p>
             </header>
 
@@ -198,7 +236,6 @@ export default function UpdateProfileInformation({
                                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm pr-10"
                                     value={data.address.zip}
                                     onChange={(e) => {
-                                        // permitir apenas dígitos e hífen na exibição (opcional)
                                         const cleaned = e.target.value.replace(/[^\d-]/g, '');
                                         setData('address.zip', cleaned);
                                     }}
@@ -274,6 +311,75 @@ export default function UpdateProfileInformation({
                         />
                         <InputError className="mt-2" message={errors['address.neighborhood']} />
                     </div>
+                </fieldset>
+
+                {/* === Dependentes === */}
+                <fieldset className="mt-6 p-4 border rounded-md">
+                    <legend className="text-sm font-medium text-gray-700">Filhos</legend>
+
+                    {/* instrução */}
+                    <p className="text-sm text-gray-500 mb-3">
+                        Os campos abaixo serão gerados automaticamente conforme o número de filhos informado.
+                    </p>
+
+                    {Array.from({ length: Number(data.children_count) || 0 }).map((_, index) => (
+                        <div key={index} className="mt-4 p-3 border rounded-md bg-gray-50">
+                            <div className="flex items-center justify-between">
+                                <h3 className="text-sm font-semibold text-gray-700">Filho {index + 1}</h3>
+                                <p className="text-xs text-gray-500">Preencha nome, data de nascimento e sexo</p>
+                            </div>
+
+                            <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                {/* Nome */}
+                                <div>
+                                    <InputLabel htmlFor={`dependents.${index}.name`} value="Nome" />
+                                    <TextInput
+                                        id={`dependents.${index}.name`}
+                                        className="mt-1 block w-full"
+                                        value={(data.dependents?.[index]?.name) || ''}
+                                        onChange={(e) => updateDependentField(index, 'name', e.target.value)}
+                                    />
+                                    <InputError className="mt-2" message={errors?.[`dependents.${index}.name`]} />
+                                </div>
+
+                                {/* Data de nascimento */}
+                                <div>
+                                    <InputLabel htmlFor={`dependents.${index}.birth_date`} value="Data de nascimento" />
+                                    <input
+                                        id={`dependents.${index}.birth_date`}
+                                        type="date"
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                                        value={(data.dependents?.[index]?.birth_date) || ''}
+                                        onChange={(e) => updateDependentField(index, 'birth_date', e.target.value)}
+                                    />
+                                    <InputError className="mt-2" message={errors?.[`dependents.${index}.birth_date`]} />
+                                </div>
+
+                                {/* Sexo */}
+                                <div>
+                                    <InputLabel htmlFor={`dependents.${index}.gender`} value="Sexo" />
+                                    <select
+                                        id={`dependents.${index}.gender`}
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                                        value={(data.dependents?.[index]?.gender) || ''}
+                                        onChange={(e) => updateDependentField(index, 'gender', e.target.value)}
+                                    >
+                                        <option value="">Selecione</option>
+                                        <option value="Masculino">Masculino</option>
+                                        <option value="Feminino">Feminino</option>
+                                        <option value="Outro">Outro</option>
+                                    </select>
+                                    <InputError className="mt-2" message={errors?.[`dependents.${index}.gender`]} />
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+
+                    {(!data.children_count || Number(data.children_count) === 0) && (
+                        <p className="text-sm text-gray-500 mt-2">
+                            Informe o número de filhos acima para preencher os dados.
+                        </p>
+                    )}
                 </fieldset>
 
                 <div className="flex items-center gap-4">
