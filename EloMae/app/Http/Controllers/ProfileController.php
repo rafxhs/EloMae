@@ -12,23 +12,48 @@ class ProfileController extends Controller
     /**
      * Mostrar o formulário de edição do perfil (Inertia)
      */
-    public function edit(Request $request)
-    {
-        $user = $request->user()->load('address', 'dependents');
+public function edit(Request $request)
+{
+    $user = $request->user()->load('address', 'dependents');
 
-        // passe dados que seu UpdateProfileInformation.jsx espera
-        // mustVerifyEmail e status são usados no template original do Jetstream
-        $mustVerifyEmail = method_exists($user, 'hasVerifiedEmail') && !$user->hasVerifiedEmail();
-        $status = session('status');
+    $mustVerifyEmail = method_exists($user, 'hasVerifiedEmail') && !$user->hasVerifiedEmail();
+    $status = session('status');
 
-        return Inertia::render('Profile/Edit', [
-            'mustVerifyEmail' => $mustVerifyEmail,
-            'status' => $status,
-            'auth' => [
-                'user' => $user,
-            ],
-        ]);
+    // Verifica se o perfil está completo 
+    $needsCompletion = empty($user->birth_date)
+        || $user->children_count === null
+        || !$user->address
+        || empty($user->address->street)
+        || empty($user->address->city)
+        || empty($user->address->state)
+        || empty($user->address->zip);
+
+    if (!$needsCompletion) {
+        $childrenCount = (int) ($user->children_count ?? 0);
+        if ($childrenCount > 0) {
+            if ($user->dependents->count() < $childrenCount) {
+                $needsCompletion = true;
+            } else {
+                foreach ($user->dependents as $dep) {
+                    if (empty($dep->name) || empty($dep->birth_date)) {
+                        $needsCompletion = true;
+                        break;
+                    }
+                }
+            }
+        }
     }
+
+    return Inertia::render('Profile/Edit', [
+        'mustVerifyEmail' => $mustVerifyEmail,
+        'status' => $status,
+        'auth' => [
+            'user' => $user,
+        ],
+        'needsCompletion' => $needsCompletion,
+    ]);
+}
+
 
     /**
      * Atualizar perfil e endereço (PATCH /profile)
