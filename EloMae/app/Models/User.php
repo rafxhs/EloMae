@@ -25,6 +25,7 @@ class User extends Authenticatable
         'birth_date',
         'children_count',
         'government_beneficiary',
+        'is_admin',
     ];
 
     /**
