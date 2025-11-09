@@ -8,6 +8,8 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\GoogleController;
 use Inertia\Inertia;
+use App\Http\Controllers\CommunityController;
+
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -18,6 +20,11 @@ Route::get('/', function () {
     ]);
 });
 
+Route::middleware('auth:sanctum')->group(function () {
+    // operações que precisam de auth já no controller - aqui deixamos criar/editar/excluir via auth
+    Route::apiResource('communities', CommunityController::class)
+         ->except(['index','show']);
+});
 // Route::get('/dashboard', function () {
 //     return Inertia::render('Dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');
@@ -26,6 +33,12 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Route::get('communities', [CommunityController::class, 'index'])->name('communities');
+    // Route::get('communities/{community}', [CommunityController::class, 'show'])->name('communities.show') ;
+
+    Route::resource('communities', CommunityController::class);
+
 
     // Perfil (Editar e Atualizar)
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
