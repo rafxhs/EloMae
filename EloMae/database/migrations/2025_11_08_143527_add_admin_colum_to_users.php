@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->enum('is_admin', ['true', 'false'])->default('false');
+            $table->boolean('is_admin')->default(false);
 
         });
     }

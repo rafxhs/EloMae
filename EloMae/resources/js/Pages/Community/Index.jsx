@@ -21,7 +21,7 @@ export default function Index() {
             <Head title="Comunidades" />
 
             <div className="py-8 px-4 max-w-6xl mx-auto">
-                {user && user.is_admin && (
+                {user && user.is_admin ? (
                     <div className="mb-6">
                         <Link
                             href={route('communities.create')}
@@ -30,7 +30,7 @@ export default function Index() {
                             + Criar nova comunidade
                         </Link>
                     </div>
-                )}
+                ) : null}
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {communities && communities.length > 0 ? (
@@ -65,7 +65,7 @@ export default function Index() {
                                         Ver detalhes
                                     </Link>
 
-                                    {user && user.is_admin && (
+                                    {user && user.is_admin ? (
                                         <div className="flex gap-3">
                                             <Link
                                                 href={route('communities.edit', community.id)}
@@ -80,7 +80,7 @@ export default function Index() {
                                                 Excluir
                                             </button>
                                         </div>
-                                    )}
+                                    ): null}
                                 </div>
                             </div>
                         ))
