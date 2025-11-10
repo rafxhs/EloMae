@@ -70,7 +70,7 @@ class CommunityController extends Controller
 
         return Inertia::render('Community/Index', [
             'auth' => [
-                'user' => $request->user() ? $request->user()->only(['id','name','email','is_admin']) : null,
+                'user' => $request->user() ? $request->user()->only(['id', 'name', 'email', 'is_admin']) : null,
             ],
             'communities' => $communities,
         ]);
@@ -81,23 +81,23 @@ class CommunityController extends Controller
     {
         return Inertia::render('Community/Create', [
             'auth' => [
-                'user' => $request->user() ? $request->user()->only(['id','name','email','is_admin']) : null,
+                'user' => $request->user() ? $request->user()->only(['id', 'name', 'email', 'is_admin']) : null,
             ],
         ]);
     }
 
     public function store(StoreCommunityRequest $request)
     {
-       $this->authorize('create', Community::class);
+        $this->authorize('create', Community::class);
 
-    $data = $request->validated();
-    $data['created_by'] = $request->user()->id;
+        $data = $request->validated();
+        $data['created_by'] = $request->user()->id;
 
-    $community = Community::create($data);
+        $community = Community::create($data);
 
-    return redirect()->route('communities.index')
-                     ->with('success', 'Comunidade criada com sucesso.');
-}
+        return redirect()->route('communities.index')
+            ->with('success', 'Comunidade criada com sucesso.');
+    }
 
     public function show(Community $community)
     {
@@ -113,7 +113,7 @@ class CommunityController extends Controller
         return Inertia::render('Community/Show', [
             'community' => $payload,
             'auth' => [
-                'user' => request()->user() ? request()->user()->only(['id','name','email','is_admin']) : null,
+                'user' => request()->user() ? request()->user()->only(['id', 'name', 'email', 'is_admin']) : null,
             ],
         ]);
     }
@@ -131,7 +131,7 @@ class CommunityController extends Controller
         return Inertia::render('Community/Edit', [
             'community' => $payload,
             'auth' => [
-                'user' => $request->user() ? $request->user()->only(['id','name','email','is_admin']) : null,
+                'user' => $request->user() ? $request->user()->only(['id', 'name', 'email', 'is_admin']) : null,
             ],
         ]);
     }
@@ -151,5 +151,17 @@ class CommunityController extends Controller
 
         return redirect()->route('communities.index')
             ->with('success', 'Comunidade removida.');
+    }
+
+    public function chat($communityId)
+    {
+        $community = Community::findOrFail($communityId);
+
+        $messages = $community->messages()->with('user')->get();
+
+        return Inertia::render('Community/Chat', [
+            'community' => $community,
+            'messages' => $messages,
+        ]);
     }
 }

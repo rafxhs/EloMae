@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Institutions;
@@ -23,13 +24,13 @@ Route::get('/', function () {
 Route::middleware('auth:sanctum')->group(function () {
     // operações que precisam de auth já no controller - aqui deixamos criar/editar/excluir via auth
     Route::apiResource('communities', CommunityController::class)
-         ->except(['index','show']);
+        ->except(['index', 'show']);
 });
 // Route::get('/dashboard', function () {
 //     return Inertia::render('Dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');
 
- // Dashboard (onde vai aparecer o "Completar Cadastro")
+// Dashboard (onde vai aparecer o "Completar Cadastro")
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -39,6 +40,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::resource('communities', CommunityController::class);
 
+    Route::get('/chat', function () {
+        return Inertia::render('Community/Chat');
+    })->name('communities.chat');
+
+    Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
+Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
+
+    //Route::get('/communities/{community}/chat', [CommunityController::class, 'chat'])->name('communities.chat');
 
     // Perfil (Editar e Atualizar)
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -55,4 +64,4 @@ Route::apiResource('locais', InstitutionsController::class);
 Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle'])->name('google.login');
 Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
