@@ -26,17 +26,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('communities', CommunityController::class)
         ->except(['index', 'show']);
 });
-// Route::get('/dashboard', function () {
-//     return Inertia::render('Dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
-
-// Dashboard (onde vai aparecer o "Completar Cadastro")
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
-    // Route::get('communities', [CommunityController::class, 'index'])->name('communities');
-    // Route::get('communities/{community}', [CommunityController::class, 'show'])->name('communities.show') ;
 
     Route::resource('communities', CommunityController::class);
 
@@ -44,12 +36,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('Community/Chat');
     })->name('communities.chat');
 
+    Route::post('/communities/{community}/join', [CommunityController::class, 'join'])
+    ->name('communities.join');
+    
     Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
-Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
+    Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
 
-    //Route::get('/communities/{community}/chat', [CommunityController::class, 'chat'])->name('communities.chat');
-
-    // Perfil (Editar e Atualizar)
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

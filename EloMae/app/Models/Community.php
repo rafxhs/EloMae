@@ -22,11 +22,16 @@ class Community extends Model
 
     public function creator()
     {
-        return $this->belongsTo(\App\Models\User::class, 'created_by');
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     public function messages()
     {
         return $this->hasMany(Message::class);
+    }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'community_user');
     }
 }

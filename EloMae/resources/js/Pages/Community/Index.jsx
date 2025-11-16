@@ -3,6 +3,8 @@ import { Head, Link, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { HiPlus, HiSearch, HiEmojiHappy, HiPaperAirplane } from 'react-icons/hi';
 import EmojiPicker from 'emoji-picker-react';
+import Modal from '@/Components/Modal'; // <-- IMPORTANTE
+import { Description } from '@headlessui/react';
 
 export default function Index() {
     const { auth, communities } = usePage().props;
@@ -13,6 +15,9 @@ export default function Index() {
     const [messages, setMessages] = useState([]);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+
+    const [showJoinModal, setShowJoinModal] = useState(false);
+    const [communityToJoin, setCommunityToJoin] = useState(null);
 
     const filteredCommunities = useMemo(() => {
         if (!searchQuery.trim()) {
@@ -27,7 +32,7 @@ export default function Index() {
         });
     }, [communities, searchQuery]);
 
-    // Função para buscar mensagens 
+    // Buscar mensagens
     const fetchMessages = async (communityId) => {
         try {
             const response = await fetch(`/api/communities/${communityId}/messages`);
@@ -38,7 +43,7 @@ export default function Index() {
         }
     };
 
-    // Função para enviar mensagem
+    // Enviar mensagem
     const sendMessage = async (e) => {
         e.preventDefault();
         if (!message.trim() || !selectedCommunity) return;
@@ -59,6 +64,23 @@ export default function Index() {
     const handleEmojiClick = (event, emojiObject) => {
         setMessage(message + emojiObject.emoji);
         setShowEmojiPicker(false);
+    };
+
+    // Entrar na comunidade
+    const joinCommunity = async () => {
+        if (!communityToJoin) return;
+
+        try {
+            await axios.post(`/communities/${communityToJoin.id}/join`);
+
+            setShowJoinModal(false);
+            communityToJoin.is_member = true;
+            setSelectedCommunity(communityToJoin);
+            fetchMessages(communityToJoin.id);
+
+        } catch (error) {
+            console.error("Erro ao entrar na comunidade:", error);
+        }
     };
 
     return (
@@ -98,27 +120,32 @@ export default function Index() {
                         </div>
 
                         {filteredCommunities && filteredCommunities.length > 0 ? (
-                            filteredCommunities.map(({ id, nome, tags }) => (
+                            filteredCommunities.map((community) => (
                                 <div
-                                    key={id}
+                                    key={community.id}
                                     onClick={() => {
-                                        setSelectedCommunity({ id, nome, tags });
-                                        fetchMessages(id);
+                                        if (!community.is_member) {
+                                            setCommunityToJoin(community);
+                                            setShowJoinModal(true);
+                                        } else {
+                                            setSelectedCommunity(community);
+                                            fetchMessages(community.id);
+                                        }
                                     }}
                                     className={`flex items-center gap-3 mx-3 px-2 py-3 rounded-lg cursor-pointer 
-                                        ${selectedCommunity?.id === id ? 'bg-gray-300' : 'hover:bg-gray-200'}`}
+                                        ${selectedCommunity?.id === community.id ? 'bg-gray-300' : 'hover:bg-gray-200'}`}
                                 >
-
                                     <div className='w-12 h-12 rounded-full overflow-hidden'>
-                                        <img src='/images/community-default.jpg' alt={`Foto da comunidade ${nome}`} className='w-full h-full object-cover' />
+                                        <img src='/images/community-default.jpg' alt={`Foto da comunidade ${community.nome}`} className='w-full h-full object-cover' />
                                     </div>
-                                    
+
                                     <div className='flex flex-col'>
-                                        <h2 className="text-lg font-semibold text-gray-800">{nome}</h2>
-                                        <p className='text-xs text-gray-500'>{tags}</p>
+                                        <h2 className="text-lg font-semibold text-gray-800">{community.nome}</h2>
+                                        <p className='text-xs text-gray-500'>{community.tags}</p>
                                     </div>
                                 </div>
                             ))
+
                         ) : (
                             <p className="text-gray-500 p-4">Nenhuma comunidade encontrada.</p>
                         )}
@@ -179,7 +206,6 @@ export default function Index() {
                                 </form>
                             </>
                         ) : (
-
                             <div className='flex flex-col justify-center items-center h-full text-gray-500 px-8 m-8 gap-4'>
                                 <img src="/images/woman-holding-flowers.svg" className='w-full' />
                                 <p className="text-justify text-lg">Entre em uma comunidade e compartilhe sua experiência com outras mães.</p>
@@ -188,6 +214,48 @@ export default function Index() {
                     </div>
                 </div>
             </div>
+
+            <Modal
+                show={showJoinModal}
+                onClose={() => setShowJoinModal(false)}
+                maxWidth="md"
+            >
+                <div className="p-6 space-y-4">
+                    <h2 className="text-xl font-semibold text-gray-800">
+                        Entrar na comunidade <span className="text-purple-600">"{communityToJoin?.nome}"</span>?
+                    </h2>
+
+                    <div className="bg-gray-100 p-4 rounded-lg">
+                        <h3 className="font-medium text-gray-700 mb-1">Sobre a comunidade:</h3>
+                        <p className="text-gray-600 text-sm leading-relaxed">
+                            {communityToJoin?.descricao ?? "Esta comunidade ainda não possui descrição."}
+                        </p>
+                    </div>
+
+                    <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
+                        <p className="text-yellow-800 text-sm">
+                            Você precisa entrar nesta comunidade para visualizar e enviar mensagens.
+                        </p>
+                    </div>
+
+                    <div className="flex justify-end gap-3">
+                        <button
+                            className="px-4 py-2 rounded-md bg-gray-300 hover:bg-gray-400"
+                            onClick={() => setShowJoinModal(false)}
+                        >
+                            Cancelar
+                        </button>
+
+                        <button
+                            className="px-4 py-2 rounded-md bg-purple-600 text-white hover:bg-purple-700"
+                            onClick={joinCommunity}
+                        >
+                            Entrar
+                        </button>
+                    </div>
+                </div>
+            </Modal>
+
         </AuthenticatedLayout>
     );
 }
