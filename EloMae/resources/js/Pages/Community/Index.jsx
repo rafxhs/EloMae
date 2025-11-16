@@ -1,10 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Head, Link, usePage } from '@inertiajs/react';
-import { Inertia } from '@inertiajs/inertia';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { HiArrowRight, HiEmojiHappy, HiPaperAirplane, HiPlus, HiSearch } from 'react-icons/hi';
+import { HiPlus, HiSearch, HiEmojiHappy, HiPaperAirplane } from 'react-icons/hi';
 import EmojiPicker from 'emoji-picker-react';
-import axios from 'axios';
 
 export default function Index() {
     const { auth, communities } = usePage().props;
@@ -14,42 +12,53 @@ export default function Index() {
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
 
-    const handleEmojiClick = (emojiObject) => {
-        setMessage(prev => prev + emojiObject.emoji);
-    };
-
-    const handleDelete = (id) => {
-        if (confirm('Tem certeza que deseja excluir esta comunidade?')) {
-            Inertia.delete(route('communities.destroy', id));
+    const filteredCommunities = useMemo(() => {
+        if (!searchQuery.trim()) {
+            return communities;
         }
-    };
 
+        const query = searchQuery.toLowerCase();
+        return communities.filter(community => {
+            const matchName = community.nome?.toLowerCase().includes(query);
+            const matchTags = community.tags?.toLowerCase().includes(query);
+            return matchName || matchTags;
+        });
+    }, [communities, searchQuery]);
+
+    // Função para buscar mensagens 
     const fetchMessages = async (communityId) => {
         try {
-            const response = await axios.get(route('messages.index', { community_id: communityId }));
-            setMessages(response.data);
+            const response = await fetch(`/api/communities/${communityId}/messages`);
+            const data = await response.json();
+            setMessages(data);
         } catch (error) {
-            console.error('Erro ao carregar mensagens:', error);
+            console.error('Erro ao buscar mensagens:', error);
         }
     };
 
+    // Função para enviar mensagem
     const sendMessage = async (e) => {
         e.preventDefault();
         if (!message.trim() || !selectedCommunity) return;
 
         try {
-            const response = await axios.post(route('messages.store'), {
-                community_id: selectedCommunity.id,
-                message: message.trim(),
+            await fetch(`/api/communities/${selectedCommunity.id}/messages`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message }),
             });
-
-            // Adicionar a nova mensagem ao estado
-            setMessages(prev => [...prev, response.data]);
             setMessage('');
+            fetchMessages(selectedCommunity.id);
         } catch (error) {
             console.error('Erro ao enviar mensagem:', error);
         }
+    };
+
+    const handleEmojiClick = (event, emojiObject) => {
+        setMessage(message + emojiObject.emoji);
+        setShowEmojiPicker(false);
     };
 
     return (
@@ -57,6 +66,7 @@ export default function Index() {
             user={user}
             header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Comunidades</h2>}
         >
+            <Head title="Comunidades" />
 
             <div className="max-w-7xl mx-auto">
                 <div className='grid grid-cols-2'>
@@ -81,28 +91,36 @@ export default function Index() {
                                     type="text"
                                     placeholder="Pesquisar comunidade"
                                     className="pl-10 pr-3 py-2 w-full bg-gray-200 text-gray-700 text-sm rounded-lg border-gray-300 focus:outline-none focus:ring-0"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
                                 />
                             </div>
                         </div>
 
-                        {communities && communities.length > 0 ? (
-                            communities.map(({ id, nome }) => (
+                        {filteredCommunities && filteredCommunities.length > 0 ? (
+                            filteredCommunities.map(({ id, nome, tags }) => (
                                 <div
                                     key={id}
-                                    onClick={() => { setSelectedCommunity({ id, nome }); fetchMessages(id); }}
+                                    onClick={() => {
+                                        setSelectedCommunity({ id, nome, tags });
+                                        fetchMessages(id);
+                                    }}
                                     className={`flex items-center gap-3 mx-3 px-2 py-3 rounded-lg cursor-pointer 
                                         ${selectedCommunity?.id === id ? 'bg-gray-300' : 'hover:bg-gray-200'}`}
                                 >
 
                                     <div className='w-12 h-12 rounded-full overflow-hidden'>
-                                        <img src='/images/community-default.jpg' alt={`Foto da comunidade ${nome}`} className='w-full h-full object-cover'></img>
+                                        <img src='/images/community-default.jpg' alt={`Foto da comunidade ${nome}`} className='w-full h-full object-cover' />
                                     </div>
-
-                                    <h2 className="text-lg font-semibold text-gray-800">{nome}</h2>
+                                    
+                                    <div className='flex flex-col'>
+                                        <h2 className="text-lg font-semibold text-gray-800">{nome}</h2>
+                                        <p className='text-xs text-gray-500'>{tags}</p>
+                                    </div>
                                 </div>
                             ))
                         ) : (
-                            <p className="text-gray-500">Nenhuma comunidade cadastrada ainda.</p>
+                            <p className="text-gray-500 p-4">Nenhuma comunidade encontrada.</p>
                         )}
 
                     </aside>
@@ -136,7 +154,6 @@ export default function Index() {
                                     ))}
                                 </div>
 
-
                                 <form className='flex items-center gap-2 p-4 border-t border-gray-300 bg-gray-200 sticky bottom-0' onSubmit={sendMessage}>
                                     <div className='relative'>
                                         <HiEmojiHappy
@@ -154,9 +171,9 @@ export default function Index() {
                                         value={message}
                                         onChange={(e) => setMessage(e.target.value)}
                                         placeholder="Enviar mensagem"
-                                        className="w-full pl-3 py-2  bg-gray-200 text-gray-700 text-sm rounded-lg border-none focus:outline-none focus:ring-0"
+                                        className="w-full pl-3 py-2 bg-gray-200 text-gray-700 text-sm rounded-lg border-none focus:outline-none focus:ring-0"
                                     />
-                                    <button type='submit' className='flex items-center justify-center px-4 py-2  text-gray-500 hover:text-gray-400'>
+                                    <button type='submit' className='flex items-center justify-center px-4 py-2 text-gray-500 hover:text-gray-400'>
                                         <HiPaperAirplane className='h-6 w-6 rotate-45' />
                                     </button>
                                 </form>
