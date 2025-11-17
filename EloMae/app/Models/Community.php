@@ -34,4 +34,11 @@ class Community extends Model
     {
         return $this->belongsToMany(User::class, 'community_user');
     }
+
+    protected $appends = ['members_count'];
+
+    public function getMembersCountAttribute()
+    {
+        return $this->users()->count();
+    }
 }

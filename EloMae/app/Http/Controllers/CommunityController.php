@@ -119,6 +119,7 @@ public function index(Request $request)
             'nome' => $community->name ?? $community->nome ?? '',
             'descricao' => $community->description ?? $community->descricao ?? '',
             'tags' => is_string($community->tags) ? $community->tags : (is_array($community->tags) ? implode(',', $community->tags) : ''),
+            'members_count' => $community->members_count,
             'created_by' => $community->created_by,
         ];
 
@@ -177,6 +178,7 @@ public function index(Request $request)
         ]);
     }
 
+        //Entrar na comunidade
     public function join(Community $community)
     {
 
@@ -188,4 +190,18 @@ public function index(Request $request)
 
         return response()->json(['message' => 'Entrou na comunidade']);
     }
+    //Sair da comunidade
+    public function leave(Community $community)
+    {
+        $user = auth()->guard()->user();
+
+        // Verifica se já é membro
+        if ($community->users()->where('user_id', $user->id)->exists()) {
+            $community->users()->detach($user->id);
+        }
+
+        return back()->with('success', 'Você saiu da comunidade.');
+        //  return redirect()->route('communities.index');
+    }
+
 }

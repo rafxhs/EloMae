@@ -60,7 +60,7 @@ export default function Edit() {
 
                 <div className="flex items-center gap-3">
                     <Link href={route('communities.show', community.id)} className="text-gray-600">Cancelar</Link>
-                    <button type="submit" disabled={processing} className="bg-pink-500 text-white px-4 py-2 rounded">
+                    <button type="submit" disabled={processing} className="bg-purple-500 text-white px-4 py-2 rounded">
                         Salvar
                     </button>
                 </div>
