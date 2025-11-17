@@ -4,7 +4,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { HiPlus, HiSearch, HiEmojiHappy, HiPaperAirplane } from 'react-icons/hi';
 import EmojiPicker from 'emoji-picker-react';
 import Modal from '@/Components/Modal'; // <-- IMPORTANTE
-import { Description } from '@headlessui/react';
+import axios from 'axios';
 
 export default function Index() {
     const { auth, communities } = usePage().props;
@@ -32,34 +32,76 @@ export default function Index() {
         });
     }, [communities, searchQuery]);
 
-    // Buscar mensagens
+    // Obter CSRF token do meta tag
+    const getCsrfToken = () => {
+        return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    };
+
+    // ===== Buscar mensagens =====
     const fetchMessages = async (communityId) => {
+        if (!communityId) return setMessages([]);
+
         try {
-            const response = await fetch(`/api/communities/${communityId}/messages`);
-            const data = await response.json();
+            const res = await fetch(`/messages?community_id=${communityId}`, {
+                method: 'GET',
+                credentials: 'same-origin',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': getCsrfToken(),
+                },
+            });
+
+            if (!res.ok) {
+                console.error('Erro ao buscar mensagens (status):', res.status);
+                const text = await res.text();
+                console.error('Response:', text);
+                setMessages([]);
+                return;
+            }
+
+            const data = await res.json();
             setMessages(data);
         } catch (error) {
             console.error('Erro ao buscar mensagens:', error);
         }
     };
 
-    // Enviar mensagem
+    // ===== Enviar mensagem =====
     const sendMessage = async (e) => {
         e.preventDefault();
         if (!message.trim() || !selectedCommunity) return;
 
         try {
-            await fetch(`/api/communities/${selectedCommunity.id}/messages`, {
+            const res = await fetch('/messages', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message }),
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': getCsrfToken(),
+                },
+                body: JSON.stringify({
+                    community_id: selectedCommunity.id,
+                    message: message.trim(),
+                }),
             });
+
+            if (!res.ok) {
+                console.error('Erro ao enviar mensagem (status):', res.status);
+                const text = await res.text();
+                console.error('Response:', text);
+                return;
+            }
+
+            const saved = await res.json();
             setMessage('');
+            // Recarregar mensagens para garantir sincronização
             fetchMessages(selectedCommunity.id);
         } catch (error) {
             console.error('Erro ao enviar mensagem:', error);
         }
     };
+
 
     const handleEmojiClick = (event, emojiObject) => {
         setMessage(message + emojiObject.emoji);
