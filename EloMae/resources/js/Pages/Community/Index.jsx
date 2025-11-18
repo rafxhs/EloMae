@@ -94,6 +94,7 @@ export default function Index() {
             }
 
             const saved = await res.json();
+            setMessages((prevMessages) => [...prevMessages, saved]);
             setMessage('');
             // Recarregar mensagens para garantir sincronização
             fetchMessages(selectedCommunity.id);
@@ -103,9 +104,10 @@ export default function Index() {
     };
 
 
-    const handleEmojiClick = (event, emojiObject) => {
-        setMessage(message + emojiObject.emoji);
-        setShowEmojiPicker(false);
+    
+    // Adicionar emoji à mensagem
+    const handleEmojiClick = (emojiData) => {
+        setMessage((prevMessage) => prevMessage + emojiData.emoji);
     };
 
     // Entrar na comunidade
