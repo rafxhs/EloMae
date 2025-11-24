@@ -104,7 +104,7 @@ export default function Index() {
     };
 
 
-    
+
     // Adicionar emoji à mensagem
     const handleEmojiClick = (emojiData) => {
         setMessage((prevMessage) => prevMessage + emojiData.emoji);
@@ -176,7 +176,7 @@ export default function Index() {
                                             fetchMessages(community.id);
                                         }
                                     }}
-                                    className={`flex items-center gap-3 mx-3 px-2 py-3 rounded-lg cursor-pointer 
+                                    className={`flex items-center gap-3 mx-3 px-2 py-3 rounded-lg cursor-pointer
                                         ${selectedCommunity?.id === community.id ? 'bg-gray-300' : 'hover:bg-gray-200'}`}
                                 >
                                     <div className='w-12 h-12 rounded-full overflow-hidden'>
