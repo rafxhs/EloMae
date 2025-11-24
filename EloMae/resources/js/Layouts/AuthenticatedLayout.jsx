@@ -31,6 +31,22 @@ export default function AuthenticatedLayout({ header, children }) {
                                     Dashboard
                                 </NavLink>
                             </div>
+                            <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                <NavLink
+                                    href={route('mapa')}
+                                    active={route().current('mapa')}
+                                >
+                                    Mapa
+                                </NavLink>
+                            </div>
+                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                <NavLink
+                                    href={route('communities.index')}
+                                    active={route().current('communities.index')}
+                                >
+                                    Comunidades
+                                </NavLink>
+                            </div>
                         </div>
 
                         <div className="hidden sm:ms-6 sm:flex sm:items-center">
@@ -162,15 +178,8 @@ export default function AuthenticatedLayout({ header, children }) {
                 </div>
             </nav>
 
-            {header && (
-                <header className="bg-white shadow">
-                    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-                        {header}
-                    </div>
-                </header>
-            )}
-
             <main>{children}</main>
         </div>
     );
 }
+

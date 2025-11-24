@@ -21,6 +21,11 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'google_id',
+        'birth_date',
+        'children_count',
+        'government_beneficiary',
+        'is_admin',
     ];
 
     /**
@@ -43,6 +48,23 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'government_beneficiary' => 'boolean',
+            'birth_date' => 'date',
         ];
+    }
+
+    public function address()
+    {
+        return $this->hasOne(Address::class);
+    }
+
+    public function dependents()
+    {
+        return $this->hasMany(Dependent::class);
+    }
+
+    public function communities()
+    {
+        return $this->belongsToMany(Community::class, 'community_user');
     }
 }

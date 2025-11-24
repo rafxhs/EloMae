@@ -113,8 +113,30 @@ export default function Register() {
                     <PrimaryButton className="ms-4" disabled={processing}>
                         Register
                     </PrimaryButton>
+                    
                 </div>
             </form>
+                        <div className="flex items-center justify-center space-x-4 mt-5">
+                <hr className="flex-grow text-neutral-300" />
+                <span className="font-secondary text-neutral-400 text-base">
+                    ou
+                </span>
+                <hr className="flex-grow text-neutral-200" />
+            </div>
+
+            <div className="mt-5 space-y-4">
+                <a href="/auth/google">
+                    <button className="w-full h-[45px] flex flex-row gap-4 items-center justify-center border border-primary-700 font-primary font-medium text-sm text-primary-1000 py-2 rounded-md shadow-md hover:border-primary-400 hover:border-1.5 focus:border-primary-700 focus:border-2 transition duration-200">
+                        <img
+                            src="https://cdn-icons-png.flaticon.com/256/2875/2875404.png"
+                            alt="Google logo"
+                            className="w-5 h-auto"
+                        />
+                        Continuar com o Google
+                    </button>
+                </a>
+            </div>
+
         </GuestLayout>
     );
 }
