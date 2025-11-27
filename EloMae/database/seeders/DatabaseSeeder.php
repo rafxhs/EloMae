@@ -15,17 +15,15 @@ class DatabaseSeeder extends Seeder
     {
 
         $this->call([
-        AdminUserSeeder::class,
-    ]);
+            AdminUserSeeder::class,
+        ]);
 
-     $this->call([
-       CommunitySeeder::class,
-    ]);
-        // User::factory(10)->create();
+        $this->call([
+            CommunitySeeder::class,
+        ]);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $this->call([
+            ArticleSeeder::class,
         ]);
     }
 }
