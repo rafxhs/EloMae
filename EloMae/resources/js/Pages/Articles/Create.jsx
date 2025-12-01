@@ -1,5 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { useForm } from '@inertiajs/react';
+import { Editor } from '@tinymce/tinymce-react';
 
 export default function Create({ auth }) {
     const { data, setData, post, processing, errors } = useForm({
@@ -17,7 +18,7 @@ export default function Create({ auth }) {
 
     return (
         <AuthenticatedLayout user={auth.user}>
-            
+
             <div className="max-w-3xl mx-auto py-6">
                 <h1 className="text-2xl font-bold mb-4">Criar Artigo</h1>
 
@@ -58,12 +59,27 @@ export default function Create({ auth }) {
 
                     <div>
                         <label>Conteúdo do Artigo</label>
-                        <textarea
-                            className="w-full border rounded p-2"
-                            rows="12"
-                            value={data.content}
-                            onChange={(e) => setData('content', e.target.value)}
-                        />
+                        <div className="border rounded">
+                            <Editor
+                                apiKey="upn2cekie3uitu1npf9iisp2gz4sc26uulghlk52fr1s1aq4"
+                                value={data.content}
+                                init={{
+                                    height: 400,
+                                    menubar: false,
+                                    entity_encoding: "raw",
+                                    entities: "160,nbsp",
+                                    plugins: [
+                                        'advlist autolink lists link image charmap preview anchor',
+                                        'searchreplace visualblocks code fullscreen',
+                                        'insertdatetime media table paste code help wordcount'
+                                    ],
+                                    toolbar:
+                                        'undo redo | formatselect | bold italic backcolor | \n' +
+                                        'alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help'
+                                }}
+                                onEditorChange={(content, editor) => setData('content', content)}
+                            />
+                        </div>
                         {errors.content && (
                             <p className="text-red-500">{errors.content}</p>
                         )}

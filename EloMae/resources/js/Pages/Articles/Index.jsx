@@ -23,11 +23,12 @@ export default function Index() {
 
                 <div className="space-y-4">
                     {articles.map((article) => (
-                        <div
+                        <Link
                             key={article.id}
-                            className="p-4 bg-white shadow rounded"
+                            href={route('articles.show', article.id)}
+                            className="p-4 bg-white shadow rounded hover:shadow-lg transition cursor-pointer block"
                         >
-                            <h2 className="text-xl font-semibold">
+                            <h2 className="text-xl font-semibold hover:text-blue-600">
                                 {article.title}
                             </h2>
                             {article.subtitle && (
@@ -42,7 +43,7 @@ export default function Index() {
                             <p className="text-xs text-gray-400 mt-1">
                                 Tags: {article.tags}
                             </p>
-                        </div>
+                        </Link>
                     ))}
                 </div>
             </div>
