@@ -8,17 +8,34 @@ use Illuminate\Http\Request;
 
 class ArticleController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return Inertia::render('Articles/Index', [
-            'articles' => Article::with('author')->latest()->get()
+        $search = $request->input('search');
+
+        $articles = Article::with('author')
+            ->when($search, function ($query, $search) {
+                $query->where('title', 'like', "%{$search}%")
+                    ->orWhere('summary', 'like', "%{$search}%")
+                    ->orWhere('tags', 'like', "%{$search}%");
+            })
+            ->latest()
+            ->get();
+
+        return inertia('Articles/Index', [
+            'articles' => $articles,
+            'filters' => [
+                'search' => $search,
+            ],
+            'auth' => [
+                'user' => $request->user(),
+            ]
         ]);
     }
 
     public function create()
     {
         $this->authorize('create', Article::class);
-        
+
         return Inertia::render('Articles/Create');
     }
 
@@ -50,7 +67,7 @@ class ArticleController extends Controller
     public function edit(Article $article)
     {
         $this->authorize('update', $article);
-        
+
         return Inertia::render('Articles/Edit', [
             'article' => $article
         ]);
