@@ -1,10 +1,38 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Link, usePage } from '@inertiajs/react';
+import { Link, usePage, router } from '@inertiajs/react';
 import DOMPurify from 'dompurify';
+import { useState } from 'react';
+import { FaStar, FaRegStar } from 'react-icons/fa';
+import axios from 'axios';
 
-export default function Show({ auth, article }) {
+export default function Show({ auth, article, favoritesCount: initialFavoritesCount, userFavorited: initialUserFavorited }) {
     const user = auth?.user ?? null;
     const isAdmin = user && user.is_admin;
+    const [favoritesCount, setFavoritesCount] = useState(initialFavoritesCount || 0);
+    const [userFavorited, setUserFavorited] = useState(initialUserFavorited || false);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleToggleFavorite = async () => {
+        if (!user) {
+            router.visit(route('login'));
+            return;
+        }
+
+        setIsLoading(true);
+        try {
+            const response = await axios.post(route('articles.favorite', article.id));
+
+            if (response.data) {
+                setUserFavorited(response.data.favorited);
+                setFavoritesCount(response.data.favorites_count);
+            }
+        } catch (error) {
+            console.error('Erro ao favoritar:', error);
+            alert('Erro ao favoritar o artigo. Tente novamente.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     return (
         <AuthenticatedLayout user={auth.user}>
@@ -12,29 +40,24 @@ export default function Show({ auth, article }) {
                 <div className="mb-6">
                     <div className="flex justify-between items-start gap-4 mb-4">
                         <h1 className="text-3xl font-bold flex-1">{article.title}</h1>
-                        {isAdmin ? (
-                            <div className="flex gap-2 shrink-0">
-                                <Link
-                                    href={route('articles.edit', article.id)}
-                                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 whitespace-nowrap"
-                                >
-                                    Editar
-                                </Link>
-                                <Link
-                                    href={route('articles.destroy', article.id)}
-                                    method="delete"
-                                    as="button"
-                                    className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 whitespace-nowrap"
-                                    onClick={(e) => {
-                                        if (!confirm('Tem certeza que deseja deletar este artigo?')) {
-                                            e.preventDefault();
-                                        }
-                                    }}
-                                >
-                                    Deletar
-                                </Link>
-                            </div>
-                        ) : null}
+                        <div className="flex gap-2 shrink-0 flex-col">
+                            <button
+                                onClick={handleToggleFavorite}
+                                disabled={isLoading}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded whitespace-nowrap transition ${userFavorited
+                                            ? 'bg-white text-yellow-400 hover:bg-yellow-100'
+                                            : 'bg-gray-200 text-gray-500 hover:bg-gray-300'
+                                        } disabled:opacity-50`}
+                                title={userFavorited ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+                            >
+                                    {userFavorited ? (
+                                        <FaStar size={18} fill="currentColor" />
+                                    ) : (
+                                        <FaRegStar size={18} />
+                                    )}
+                                <span>{favoritesCount}</span>
+                            </button>
+                        </div>
                     </div>
 
                     {article.subtitle && (
@@ -73,6 +96,30 @@ export default function Show({ auth, article }) {
                         dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.content || '') }}
                     />
                 </div>
+                
+                {isAdmin ? (
+                    <div className="flex gap-2">
+                        <Link
+                            href={route('articles.edit', article.id)}
+                            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 whitespace-nowrap text-center"
+                        >
+                            Editar
+                        </Link>
+                        <Link
+                            href={route('articles.destroy', article.id)}
+                            method="delete"
+                            as="button"
+                            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 whitespace-nowrap"
+                            onClick={(e) => {
+                                if (!confirm('Tem certeza que deseja deletar este artigo?')) {
+                                    e.preventDefault();
+                                }
+                            }}
+                        >
+                            Deletar
+                        </Link>
+                    </div>
+                ) : null}
             </div>
         </AuthenticatedLayout>
     );

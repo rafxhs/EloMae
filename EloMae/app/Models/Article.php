@@ -19,4 +19,14 @@ class Article extends Model
     {
         return $this->belongsTo(User::class, 'author_id');
     }
+
+    public function favorites()
+    {
+        return $this->hasMany(ArticleFavorite::class);
+    }
+
+    public function favoritedBy()
+    {
+        return $this->belongsToMany(User::class, 'article_favorites');
+    }
 }

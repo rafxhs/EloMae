@@ -11,6 +11,7 @@ use App\Http\Controllers\Auth\GoogleController;
 use Inertia\Inertia;
 use App\Http\Controllers\CommunityController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\ArticleFavoriteController;
 
 
 Route::get('/', function () {
@@ -50,6 +51,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::resource('articles', ArticleController::class);
+    Route::post('/articles/{article}/favorite', [ArticleFavoriteController::class, 'toggle'])->name('articles.favorite');
 
 });
 

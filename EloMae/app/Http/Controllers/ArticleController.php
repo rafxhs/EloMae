@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Article;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ArticleController extends Controller
 {
@@ -59,8 +60,12 @@ class ArticleController extends Controller
 
     public function show(Article $article)
     {
+        $user = Auth::user();
+        
         return Inertia::render('Articles/Show', [
-            'article' => $article->load('author')
+            'article' => $article->load('author', 'favorites'),
+            'favoritesCount' => $article->favorites()->count(),
+            'userFavorited' => $user ? $article->favoritedBy()->where('user_id', $user->id)->exists() : false,
         ]);
     }
 
