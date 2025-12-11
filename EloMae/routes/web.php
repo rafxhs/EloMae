@@ -12,6 +12,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\CommunityController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\ArticleFavoriteController;
+use App\Http\Controllers\CategoryController;
 
 
 Route::get('/', function () {
@@ -63,5 +64,9 @@ Route::apiResource('locais', InstitutionsController::class);
 
 Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle'])->name('google.login');
 Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
+
+
+Route::resource('categories', CategoryController::class);
+
 
 require __DIR__ . '/auth.php';
