@@ -112,7 +112,7 @@ export default function Show({ auth, article, favoritesCount: initialFavoritesCo
                 </div>
 
 
-                <div className="mt-12 p-6 bg-purple-200 text-black rounded-lg flex flex-col items-center mb-6">
+                <div className="mt-12 p-6 bg-gray-300 text-black rounded-lg flex flex-col items-center mb-6">
                 <p className="text-lg mb-4">Esse artigo foi útil?</p>
 
                 <div className="flex items-center gap-6">
