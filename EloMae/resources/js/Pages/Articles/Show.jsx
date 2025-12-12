@@ -4,6 +4,7 @@ import DOMPurify from 'dompurify';
 import { useState } from 'react';
 import { FaStar, FaRegStar } from 'react-icons/fa';
 import axios from 'axios';
+import { AiOutlineSmile, AiOutlineMeh } from "react-icons/ai";
 
 export default function Show({ auth, article, favoritesCount: initialFavoritesCount, userFavorited: initialUserFavorited }) {
     const user = auth?.user ?? null;
@@ -11,6 +12,19 @@ export default function Show({ auth, article, favoritesCount: initialFavoritesCo
     const [favoritesCount, setFavoritesCount] = useState(initialFavoritesCount || 0);
     const [userFavorited, setUserFavorited] = useState(initialUserFavorited || false);
     const [isLoading, setIsLoading] = useState(false);
+    const {  userVote } = usePage().props;
+    const [vote, setVote] = useState(userVote);
+
+    function sendVote(value) {
+        setVote(value); 
+        router.post(
+            route("articles.vote", article.id),
+            { value },
+            {
+                preserveScroll: true,
+            }
+        ); 
+}
 
     const handleToggleFavorite = async () => {
         if (!user) {
@@ -96,7 +110,37 @@ export default function Show({ auth, article, favoritesCount: initialFavoritesCo
                         dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.content || '') }}
                     />
                 </div>
-                
+
+
+                <div className="mt-12 p-6 bg-purple-200 text-black rounded-lg flex flex-col items-center mb-6">
+                <p className="text-lg mb-4">Esse artigo foi útil?</p>
+
+                <div className="flex items-center gap-6">
+
+                <button onClick={() => sendVote("yes")}>
+                    {vote === "yes" ? (
+    
+                        <AiOutlineSmile size={32} className="text-green-600" />
+                    ) : (
+                        <AiOutlineSmile size={32} className="text-gray-400" />
+                    )}
+                </button>
+
+                <button onClick={() => sendVote("no")}>
+                    {vote === "no" ? (
+                        <AiOutlineMeh size={32} className="text-red-600" />
+                    ) : (
+                        <AiOutlineMeh size={32} className="text-gray-400" />
+                    )}
+                </button>
+
+            </div>
+          
+                <p className="text-sm text-gray-700 mt-4">
+                    {article.helpful_yes} sim · {article.helpful_no} não
+                </p>
+            </div>
+
                 {isAdmin ? (
                     <div className="flex gap-2">
                         <Link
@@ -121,6 +165,7 @@ export default function Show({ auth, article, favoritesCount: initialFavoritesCo
                     </div>
                 ) : null}
             </div>
+
         </AuthenticatedLayout>
     );
 }

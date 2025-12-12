@@ -37,4 +37,9 @@ class Article extends Model
         return $this->belongsTo(Category::class);
     }
 
+    public function votes()
+    {
+        return $this->hasMany(ArticleVote::class);
+    }
+
 }
