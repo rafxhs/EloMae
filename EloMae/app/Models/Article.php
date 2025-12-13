@@ -13,6 +13,8 @@ class Article extends Model
         'content',   
         'author_id',
         'tags',
+        'category_id',
+        
     ];
 
     public function author()
@@ -29,4 +31,15 @@ class Article extends Model
     {
         return $this->belongsToMany(User::class, 'article_favorites');
     }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function votes()
+    {
+        return $this->hasMany(ArticleVote::class);
+    }
+
 }

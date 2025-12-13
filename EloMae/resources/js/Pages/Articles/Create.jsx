@@ -2,13 +2,14 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { useForm } from '@inertiajs/react';
 import { Editor } from '@tinymce/tinymce-react';
 
-export default function Create({ auth }) {
+export default function Create({ auth, categories }) {
     const { data, setData, post, processing, errors } = useForm({
         title: '',
         subtitle: '',
         summary: '',
         content: '',
         tags: '',
+        category_id: categories.length > 0 ? categories[0].id : null,
     });
 
     const submit = (e) => {
@@ -23,6 +24,27 @@ export default function Create({ auth }) {
                 <h1 className="text-2xl font-bold mb-4">Criar Artigo</h1>
 
                 <form onSubmit={submit} className="space-y-4">
+
+                     <div>
+                        <label>Categoria</label>
+                        <select
+                            className="w-full border rounded p-2"
+                            value={data.category_id}
+                            onChange={(e) => setData('category_id', e.target.value)}
+                        >
+                            <option value="">Selecione uma categoria</option>
+                            {categories.map((cat) => (
+                                <option key={cat.id} value={cat.id}>
+                                    {cat.name}
+                                </option>
+                            ))}
+                        </select>
+
+                        {errors.category_id && (
+                            <p className="text-red-500">{errors.category_id}</p>
+                        )}
+                    </div>
+
                     <div>
                         <label>Título</label>
                         <input
@@ -35,7 +57,7 @@ export default function Create({ auth }) {
                     </div>
 
                     <div>
-                        <label>Subtitulo</label>
+                        <label>Subtitulo (Opcional)</label>
                         <input
                             type="text"
                             className="w-full border rounded p-2"
@@ -55,6 +77,16 @@ export default function Create({ auth }) {
                         {errors.summary && (
                             <p className="text-red-500">{errors.summary}</p>
                         )}
+                    </div>
+
+                    <div>
+                        <label>Tags (separadas por vírgula)</label>
+                        <input
+                            type="text"
+                            className="w-full border rounded p-2"
+                            value={data.tags}
+                            onChange={(e) => setData('tags', e.target.value)}
+                        />
                     </div>
 
                     <div>
@@ -83,16 +115,6 @@ export default function Create({ auth }) {
                         {errors.content && (
                             <p className="text-red-500">{errors.content}</p>
                         )}
-                    </div>
-
-                    <div>
-                        <label>Tags (separadas por vírgula)</label>
-                        <input
-                            type="text"
-                            className="w-full border rounded p-2"
-                            value={data.tags}
-                            onChange={(e) => setData('tags', e.target.value)}
-                        />
                     </div>
 
                     <button
