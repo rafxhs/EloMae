@@ -55,13 +55,16 @@ export default function Mapa() {
   }
 
   return (
-    <AuthenticatedLayout
-      header={<Search filtro={filtro} setFiltro={setFiltro} />} 
-    >
+    <AuthenticatedLayout>
+      
+    <div className="flex items-center justify-center h-full bg-transparent p-4">
+      <Search filtro={filtro} setFiltro={setFiltro} />
+    </div>
+
       <MapContainer
         center={pos}
         zoom={13}
-        className="h-[500px] w-full rounded-lg shadow-lg"
+        className="h-screen w-full rounded-lg shadow-lg z-0"
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -71,6 +74,16 @@ export default function Mapa() {
         <Marker position={pos}>
           <Popup>Você está aqui</Popup>
         </Marker>
+        {/* <Marker position={[inst.lat, inst.lng]}>
+        <Popup>
+          <strong>{inst.name}</strong><br />
+          {inst.address}<br />
+
+          <a href={`/institutions/${inst.id}`}>
+            Ver detalhes
+          </a>
+        </Popup>
+      </Marker> */}
       </MapContainer>
     </AuthenticatedLayout>
   );
