@@ -6,29 +6,36 @@ use App\Models\Article;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Category;
+use App\Models\ArticleVote;
 
 class ArticleController extends Controller
 {
     public function index(Request $request)
     {
-        $search = $request->input('search');
+        $search = $request->get('search');
+        $category = $request->get('category');
 
-        $articles = Article::with('author')
-            ->when($search, function ($query, $search) {
-                $query->where('title', 'like', "%{$search}%")
-                    ->orWhere('summary', 'like', "%{$search}%")
-                    ->orWhere('tags', 'like', "%{$search}%");
-            })
-            ->latest()
-            ->get();
+        $query = Article::with('author', 'category');
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                ->orWhere('summary', 'like', "%{$search}%")
+                ->orWhere('tags', 'like', "%{$search}%");
+            });
+        }
+
+        if ($category) {
+            $query->where('category_id', $category);
+        }
 
         return inertia('Articles/Index', [
-            'articles' => $articles,
+            'articles' => $query->orderBy('created_at', 'desc')->get(),
+            'categories' => Category::orderBy('name')->get(['id', 'name']),
             'filters' => [
                 'search' => $search,
-            ],
-            'auth' => [
-                'user' => $request->user(),
+                'category' => $category,
             ]
         ]);
     }
@@ -37,7 +44,9 @@ class ArticleController extends Controller
     {
         $this->authorize('create', Article::class);
 
-        return Inertia::render('Articles/Create');
+        return inertia('Articles/Create', [
+        'categories' => Category::all()
+    ]);
     }
 
     public function store(Request $request)
@@ -48,6 +57,7 @@ class ArticleController extends Controller
             'summary' => 'required',
             'content' => 'required',
             'tags' => 'nullable|string',
+            'category_id' => 'required|exists:categories,id',
         ]);
 
         $data['author_id'] = $request->user()->id;
@@ -61,9 +71,23 @@ class ArticleController extends Controller
     public function show(Article $article)
     {
         $user = Auth::user();
-        
+
+        $article->loadCount([
+            'votes as helpful_yes' => fn($q) => $q->where('value', 'yes'),
+            'votes as helpful_no' => fn($q) => $q->where('value', 'no'),
+        ]);
+
+        $userVote = null;
+
+        if ($user) {
+            $userVote = $article->votes()
+                ->where('user_id', $user->id)
+                ->value('value');
+        }
+
         return Inertia::render('Articles/Show', [
             'article' => $article->load('author', 'favorites'),
+            'userVote' => $userVote,
             'favoritesCount' => $article->favorites()->count(),
             'userFavorited' => $user ? $article->favoritedBy()->where('user_id', $user->id)->exists() : false,
         ]);
@@ -88,6 +112,7 @@ class ArticleController extends Controller
             'summary' => 'required',
             'content' => 'required',
             'tags' => 'nullable|string',
+            'category_id' => 'required|exists:categories,id',
         ]);
 
         $article->update($data);
@@ -105,4 +130,26 @@ class ArticleController extends Controller
         return redirect()->route('articles.index')
             ->with('success', 'Artigo deletado com sucesso!');
     }
+
+   public function vote(Request $request, Article $article)
+    {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
+        $request->validate([
+            'value' => 'required|in:yes,no',
+        ]);
+
+        ArticleVote::updateOrCreate(
+            [
+                'article_id' => $article->id,
+                'user_id' => Auth::id(),
+            ],
+            ['value' => $request->value]
+        );
+
+        return back()->with('success', 'Voto registrado.');
+    }
+
 }

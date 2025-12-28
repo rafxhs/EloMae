@@ -3,15 +3,16 @@ import { Link, usePage, router } from "@inertiajs/react";
 import { useState } from "react";
 
 export default function Index() {
-    const { auth, articles, filters } = usePage().props;
+    const { auth, articles, filters, categories} = usePage().props;
     const user = auth?.user ?? null;
     const [search, setSearch] = useState(filters?.search ?? "");
+    const [category, setCategory] = useState(filters?.category ?? "");
 
     function handleSearch(e) {
         e.preventDefault();
         router.get(
             route("articles.index"),
-            { search },
+            { search, category },
             { preserveState: true }
         );
     }
@@ -32,21 +33,48 @@ export default function Index() {
                     ) : null}
                 </div>
 
-                <form onSubmit={handleSearch} className="mb-6 flex gap-2">
-                    <input
-                        type="text"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        placeholder="Pesquisar por título, resumo ou tags..."
-                        className="flex-1 border px-3 py-2 rounded"
-                    />
-                    <button
-                        type="submit"
-                        className="px-4 py-2 bg-gray-800 text-white rounded"
-                    >
-                        Buscar
-                    </button>
-                </form>
+                    <form onSubmit={handleSearch} className="mb-6 flex gap-2">
+
+                        {/* FILTRO DE CATEGORIA */}
+                        <select
+                            value={category}
+                            onChange={(e) => {
+                                setCategory(e.target.value);
+                                router.get(
+                                    route("articles.index"),
+                                    { search, category: e.target.value },
+                                    { preserveState: true }
+                                );
+                            }}
+                            className="border px-3 py-2 rounded"
+                        >
+                            <option value="">Todas as categorias</option>
+
+                            {categories.map((cat) => (
+                                <option key={cat.id} value={cat.id}>
+                                    {cat.name}
+                                </option>
+                            ))}
+                        </select>
+
+                        {/* BUSCA */}
+                        <input
+                            type="text"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            placeholder="Pesquisar por título, resumo ou tags..."
+                            className="flex-1 border px-3 py-2 rounded"
+                        />
+
+                        <button
+                            type="submit"
+                            className="px-4 py-2 bg-gray-800 text-white rounded"
+                        >
+                            Buscar
+                        </button>
+                    </form>
+
+
 
                 <div className="space-y-4">
                     {articles.length === 0 ? (
