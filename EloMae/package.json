@@ -24,7 +24,9 @@
     },
     "dependencies": {
         "@inertiajs/inertia": "^0.11.1",
+        "@tinymce/tinymce-react": "^6.3.0",
         "@vitejs/plugin-react": "^5.1.0",
+        "dompurify": "^3.3.0",
         "emoji-picker-react": "^4.15.0",
         "leaflet": "^1.9.4",
         "react-icons": "^5.5.0",

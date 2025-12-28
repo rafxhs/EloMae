@@ -47,6 +47,16 @@ export default function AuthenticatedLayout({ header, children }) {
                                     Comunidades
                                 </NavLink>
                             </div>
+
+                            <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                <NavLink
+                                    href={route("articles.index")}
+                                    active={route().current("articles.index")}
+                                >
+                                    Artigos
+                                </NavLink>
+                            </div>
+
                         </div>
 
                         <div className="hidden sm:ms-6 sm:flex sm:items-center">

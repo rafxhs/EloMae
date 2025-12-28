@@ -14,18 +14,11 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
 
-        $this->call([
+    $this->call([
         AdminUserSeeder::class,
+        CategorySeeder::class,
+        CommunitySeeder::class,
+        ArticleSeeder::class,
     ]);
-
-     $this->call([
-       CommunitySeeder::class,
-    ]);
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
     }
 }
