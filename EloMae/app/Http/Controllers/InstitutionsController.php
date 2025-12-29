@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Institutions;
 use Psy\VersionUpdater\Installer;
+use Inertia\Inertia;
 
 class InstitutionsController extends Controller
 {
@@ -34,13 +35,12 @@ class InstitutionsController extends Controller
     /**
      * Display the specified resource.
      */
-    // public function show(string $id)
-    // {
-    //     return Institutions::findOrFail($id);
-    // }
-    public function show(Institutions $institution)
-    {
-        return response()->json($institution);
+  
+    public function show(InstitutionS $institution)
+        {
+            return Inertia::render('Institutions/Show', [
+            'institution' => $institution
+        ]);
     }
 
     /**
