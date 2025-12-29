@@ -11,9 +11,16 @@ class InstitutionsController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+        public function index()
     {
-        return Institutions::all();
+        return Institutions::select(
+            'id',
+            'name',
+            'address',
+            'lat',
+            'lng',
+            'type'
+        )->get();
     }
 
     /**
@@ -27,9 +34,13 @@ class InstitutionsController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    // public function show(string $id)
+    // {
+    //     return Institutions::findOrFail($id);
+    // }
+    public function show(Institutions $institution)
     {
-        return Institutions::findOrFail($id);
+        return response()->json($institution);
     }
 
     /**

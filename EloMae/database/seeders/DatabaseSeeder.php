@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
         CategorySeeder::class,
         CommunitySeeder::class,
         ArticleSeeder::class,
+        InstitutionSeeder::class,
     ]);
     }
 }

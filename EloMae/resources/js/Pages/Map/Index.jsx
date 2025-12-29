@@ -1,6 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import React, { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, CircleMarker } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -8,7 +8,7 @@ import iconUrl from "leaflet/dist/images/marker-icon.png";
 import iconRetinaUrl from "leaflet/dist/images/marker-icon-2x.png";
 import shadowUrl from "leaflet/dist/images/marker-shadow.png";
 
-import Search from "@/Components/Search"; // ✅ novo componente
+import Search from "@/Components/Search"; 
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -21,6 +21,13 @@ export default function Mapa() {
   const [filtro, setFiltro] = useState("Todos");
   const [locais, setLocais] = useState([]);
   const [pos, setPos] = useState(null);
+
+  useEffect(() => {
+  fetch("/api/institutions")
+    .then((res) => res.json())
+    .then((data) => setLocais(data))
+    .catch(() => alert("Erro ao carregar locais"));
+  }, []);
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -36,7 +43,7 @@ export default function Mapa() {
   }, []);
 
   const locaisFiltrados =
-    filtro === "Todos" ? locais : locais.filter((l) => l.tipo === filtro);
+    filtro === "Todos" ? locais : locais.filter((l) => l.type === filtro);
 
   if (!pos) {
     return (
@@ -61,30 +68,40 @@ export default function Mapa() {
       <Search filtro={filtro} setFiltro={setFiltro} />
     </div>
 
-      <MapContainer
-        center={pos}
-        zoom={13}
-        className="h-screen w-full rounded-lg shadow-lg z-0"
-      >
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
-        />
+  <MapContainer
+    center={pos}
+    zoom={13}
+    className="h-screen w-full rounded-lg shadow-lg z-0"
+  >
+    <TileLayer
+      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      attribution='&copy; OpenStreetMap'
+    />
 
-        <Marker position={pos}>
+      {/* Marker da posição do usuário */}
+      {/* <Marker position={pos} > */}
+        <CircleMarker center={pos} radius={30} color="purple" >
+          <Marker position={pos}>
+            <Popup>Você está aqui</Popup>
+          </Marker>
+        </CircleMarker>
+      
+      {/* <CircleMarker center={pos} radius={500} color="blue">
           <Popup>Você está aqui</Popup>
-        </Marker>
-        {/* <Marker position={[inst.lat, inst.lng]}>
-        <Popup>
-          <strong>{inst.name}</strong><br />
-          {inst.address}<br />
+      </CircleMarker> */}
+   
 
-          <a href={`/institutions/${inst.id}`}>
-            Ver detalhes
-          </a>
-        </Popup>
-      </Marker> */}
-      </MapContainer>
+      {/* Markers das seeders */}
+      {locaisFiltrados.map((inst) => (
+        <Marker key={inst.id} position={[inst.lat, inst.lng]}>
+          <Popup>
+            <strong>{inst.name}</strong><br />
+            {inst.address}
+          </Popup>
+        </Marker>
+      ))}
+  </MapContainer>
+
     </AuthenticatedLayout>
   );
 }
