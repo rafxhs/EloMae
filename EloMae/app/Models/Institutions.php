@@ -17,4 +17,13 @@ class Institutions extends Model
         'opening_hours',
         'services',
     ];
+
+    public function getPhotoUrlAttribute()
+    {
+        return $this->photo
+            ? asset('storage/' . $this->photo)
+            : null;
+    }
 }
+
+

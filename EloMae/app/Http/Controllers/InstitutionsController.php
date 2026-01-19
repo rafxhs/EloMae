@@ -36,11 +36,12 @@ class InstitutionsController extends Controller
      * Display the specified resource.
      */
   
-    public function show(InstitutionS $institution)
+    public function show(Institutions $institution)
         {
             return Inertia::render('Institutions/Show', [
             'institution' => $institution
         ]);
+        
     }
 
     /**

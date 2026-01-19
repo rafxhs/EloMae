@@ -20,8 +20,8 @@ class InstitutionSeeder extends Seeder
                 'phone' => '(81) 99224-4991',
                 'opening_hours' => 'Seg a Sex, 08h - 16h',
                 'services' => 'Acolhida, Escuta qualificada, CadÚnico, Bolsa Família, BPC, SCFV, Oficinas, Ações comunitárias',
-                'photo' => 'https://lh3.googleusercontent.com/gps-cs-s/AC9h4nqc776HnYgNRYIMpl-vYNb4-86vH6yyUXc79caouQAhApkjjjoy2qWSePZj6cynkyqTeRSJTqai9Jl4jxjVA6IDNyfMZkRWdNxLZTohW1xccJ8FluVlg8rrU44I7duxG0fKGWcEfCDiC7M=s680-w680-h510-rw'
-            ],
+                'photo'=>  '/images/institutions/CRAS-igarassu.jpg',
+                ],
 
             [
                 'name' => 'CREAS - Centro de Referência Especializado',
@@ -32,7 +32,7 @@ class InstitutionSeeder extends Seeder
                 'phone' => '(81) 99145-9086',
                 'opening_hours' => 'Seg a Sex, 08h - 16h',
                 'services' => 'Apoio psicossocial, orientação jurídica, escuta qualificada, prevenção de violações',
-                'photo' => 'https://creas.me/wp-content/uploads/2019/12/creas.jpg'
+                'photo' => '/images/institutions/creas.jpg'
             ],
 
             [
@@ -44,7 +44,7 @@ class InstitutionSeeder extends Seeder
                 'phone' => '(81) 3184-7075',
                 'opening_hours' => 'Atendimento 24h',
                 'services' => 'BO, medidas protetivas, investigação, acolhimento, encaminhamento jurídico',
-                'photo' => 'https://lh3.googleusercontent.com/gps-cs-s/AC9h4nrFXDvxhZTPmmmx1YZiENGzSbUQ95Q6mFdXYhWwWsmxN7lGZHDGTHZPC1tkzBFVfrOkVc8HAS4BlDjR-Z6IwSKRl0EERXI6sWCIrgjcrXdgImhfPxQJfR7Y0rIbxn2SgYyF-6ETug=s680-w680-h510-rw'
+                'photo' => '/images/institutions/delegaciaMulher.jpg'
             ],
 
             [
@@ -56,7 +56,31 @@ class InstitutionSeeder extends Seeder
                 'phone' => '(81) 99128-8464',
                 'opening_hours' => 'Seg a Sex, 07h - 13h',
                 'services' => 'Acolhimento, apoio psicossocial, assistência jurídica, autonomia econômica',
-                'photo' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Women_support_center.jpg/640px-Women_support_center.jpg'
+                'photo' => '/images/institutions/prefeitura.jpg'
+            ],
+
+            [
+                'name' => 'Prefeitura de Igarassu',
+                'type' => 'Prefeitura',
+                'address' => 'Rua Joaquim Nabuco, 122 - Centro, Igarassu - PE',
+                'lat' => -7.91167,
+                'lng' => -34.90278,
+                'phone' => '(81) 3543-0729',
+                'opening_hours' => 'Seg a Sex, 07h - 13h',
+                'services' => 'Saúde, educação, assistência social, infraestrutura, transporte, cultura, meio ambiente e segurança',
+                'photo' => '/images/institutions/prefeitura.jpg'
+            ],
+
+            [
+                'name' => 'Unidade de Saúde da Família (USF)',
+                'type' => 'Saúde',
+                'address' => ' Av. Alfredo Bandeira de Melo - Centro, Igarassu - PE, 53610-000',
+                'lat' => -7.83417,
+                'lng' => -34.90639,
+                'phone' => '(81) 9 9128-8464',
+                'opening_hours' => 'Seg a Sex, 07h - 13h',
+                'services' => 'Consultas médicas, de enfermagem e odontológicas, vacinação, pré-natal, e acompanhamento de crianças, adolescentes, adultos e idosos.',
+                'photo' => '/images/institutions/UFS-igarassu.jpg'
             ],
 
             [
@@ -68,7 +92,7 @@ class InstitutionSeeder extends Seeder
                 'phone' => '(81) 98888-1111',
                 'opening_hours' => 'Seg a Sex, 09h - 17h',
                 'services' => 'Apoio psicológico, oficinas educativas, acolhimento feminino',
-                'photo' => 'https://upload.wikimedia.org/wikipedia/commons/3/3f/NGO_building.jpg'
+                'photo' => '/images/institutions/ong-exemplo.jpg'   
             ],
             [
                 'name' => 'Centro Comunitário Esperança',
@@ -79,7 +103,7 @@ class InstitutionSeeder extends Seeder
                 'phone' => '(81) 97777-2222',
                 'opening_hours' => 'Seg a Sex, 08h - 16h',
                 'services' => 'Cursos, palestras, apoio social',
-                'photo' => 'https://upload.wikimedia.org/wikipedia/commons/6/6e/Community_center.jpg'
+                'photo' => '/images/institutions/ong-exemplo2.png'
             ],
            
         ];

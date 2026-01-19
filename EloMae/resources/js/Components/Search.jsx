@@ -2,14 +2,14 @@ import React from "react";
 
 const termos = [
   "Todos",
-  "CRAS",
-  "Prefeitura",
   "CREAS",
-  "Delegacia da Mulher",
+  "CRAS",
+  "Educação",
   "Delegacia",
+  "Prefeitura",
+  "Saúde",
+  "Secretaria",
   "ONG",
-  "Creche",
-  "Escola municipal",
 ];
 
 export default function Search({ filtro, setFiltro }) {

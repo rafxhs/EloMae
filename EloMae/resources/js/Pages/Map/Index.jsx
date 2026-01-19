@@ -10,6 +10,7 @@ import shadowUrl from "leaflet/dist/images/marker-shadow.png";
 
 import Search from "@/Components/Search";
 import { Link } from '@inertiajs/react';
+import LinkButton from '@/Components/LinkButton';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -88,15 +89,17 @@ export default function Mapa() {
         {locaisFiltrados.map((inst) => (
           <Marker key={inst.id} position={[inst.lat, inst.lng]}>
             <Popup>
-              <strong>{inst.name}</strong><br />
+              <strong className='text-sm'>{inst.name}</strong><br />
               {inst.address}
 
-            <Link
+            <div className="pt-2">
+            <LinkButton
               href={`/institutions/${inst.id}`}
-              className="text-indigo-600 underline block mt-2"
+              className='w-full'
             >
               Ver detalhes
-            </Link>
+            </LinkButton>
+            </div>
             </Popup>
           </Marker>
         ))}
