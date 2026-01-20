@@ -52,6 +52,12 @@ export default function Show({ auth, article, favoritesCount: initialFavoritesCo
     return (
         <AuthenticatedLayout user={auth.user}>
             <div className="max-w-4xl mx-auto py-10 p-6 relative shadow-lg">
+                <LinkButton
+                    href={route("articles.index")}
+                    className="mb-6"
+                >
+                    Voltar
+                </LinkButton>
                 <div className="mb-6 border-b pb-4 border-gray-300 ">
                     <div className="flex justify-between items-start gap-4 mb-4 relative">
                         <div className="absolute right-4 flex gap-2 shrink-0 flex-col">
@@ -142,7 +148,7 @@ export default function Show({ auth, article, favoritesCount: initialFavoritesCo
                     <div className="flex gap-2 justify-center mt-6">
                         <Link
                             href={route('articles.edit', article.id)}
-                            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 whitespace-nowrap text-center"
+                            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 whitespace-nowrap text-center"
                         >
                             Editar
                         </Link>
@@ -150,7 +156,7 @@ export default function Show({ auth, article, favoritesCount: initialFavoritesCo
                             href={route('articles.destroy', article.id)}
                             method="delete"
                             as="button"
-                            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 whitespace-nowrap"
+                            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 whitespace-nowrap"
                             onClick={(e) => {
                                 if (!confirm('Tem certeza que deseja deletar este artigo?')) {
                                     e.preventDefault();
@@ -162,6 +168,7 @@ export default function Show({ auth, article, favoritesCount: initialFavoritesCo
                     </div>
                 ) : null}
             </div>
+            
 
         </AuthenticatedLayout>
     );
