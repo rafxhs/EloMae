@@ -135,10 +135,9 @@ export default function Show({ auth, article, favoritesCount: initialFavoritesCo
                 </button>
 
             </div>
-          
-                <p className="text-sm text-gray-700 mt-4">
+                {/* <p className="text-sm text-gray-700 mt-4">
                     {article.helpful_yes} sim · {article.helpful_no} não
-                </p>
+                </p> */}
             </div>
 
                 {isAdmin ? (

@@ -35,7 +35,15 @@ Route::get('/', function () {
 Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle'])->name('google.login');
 Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 
+
+/*
+|--------------------------------------------------------------------------
+| Rotas de mapa e instituições
+|--------------------------------------------------------------------------
+*/
 Route::get('/mapa', fn () => Inertia::render('Map/Index'))->name('mapa');
+Route::get('/institutions/{institution}', [InstitutionsController::class, 'show'])
+    ->name('institutions.show');
 
 /*
 |--------------------------------------------------------------------------
