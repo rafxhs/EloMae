@@ -1,6 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { useForm } from '@inertiajs/react';
+import { useForm, Link } from '@inertiajs/react';
 import { Editor } from '@tinymce/tinymce-react';
+import LinkButton from '@/Components/LinkButton';
 
 export default function Edit({ auth, article }) {
     const { data, setData, patch, processing, errors } = useForm({
@@ -18,10 +19,16 @@ export default function Edit({ auth, article }) {
 
     return (
         <AuthenticatedLayout user={auth.user}>
-            <div className="max-w-3xl mx-auto py-6">
+            <div className="max-w-4xl mx-auto py-10 relative">
+                <LinkButton
+                    href={route('articles.show', article.id)}
+                    className="absolute right-4 flex items-center justify-center"
+                >
+                    Voltar
+                </LinkButton>
                 <h1 className="text-2xl font-bold mb-4">Editar Artigo</h1>
 
-                <form onSubmit={submit} className="space-y-4">
+                <form onSubmit={submit} className="text-lg space-y-6 mt-6 border border-gray-300 p-6 rounded">
                     <div>
                         <label className="block font-semibold mb-1">Título</label>
                         <input
@@ -57,8 +64,18 @@ export default function Edit({ auth, article }) {
                     </div>
 
                     <div>
+                        <label className="block font-semibold mb-1">Tags (separadas por vírgula)</label>
+                        <input
+                            type="text"
+                            className="w-full border rounded p-2"
+                            value={data.tags}
+                            onChange={(e) => setData('tags', e.target.value)}
+                        />
+                    </div>
+
+                    <div>
                         <label className="block font-semibold mb-1">Conteúdo do Artigo</label>
-                        <div className="border rounded">
+                        <div className="border rounded py-2 border-gray-500">
                             <Editor
                                 apiKey="upn2cekie3uitu1npf9iisp2gz4sc26uulghlk52fr1s1aq4"
                                 value={data.content}
@@ -84,29 +101,20 @@ export default function Edit({ auth, article }) {
                         )}
                     </div>
 
-                    <div>
-                        <label className="block font-semibold mb-1">Tags (separadas por vírgula)</label>
-                        <input
-                            type="text"
-                            className="w-full border rounded p-2"
-                            value={data.tags}
-                            onChange={(e) => setData('tags', e.target.value)}
-                        />
-                    </div>
 
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 justify-center">
                         <button
                             disabled={processing}
-                            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50"
+                            className="w-[300px] h-auto bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50"
                         >
                             Salvar Alterações
                         </button>
-                        <a
+                        <Link
                             href={route('articles.show', article.id)}
-                            className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+                            className="w-[200px] bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700"
                         >
-                            Cancelar
-                        </a>
+                            Cancelar Alterações
+                        </Link>
                     </div>
                 </form>
             </div>
