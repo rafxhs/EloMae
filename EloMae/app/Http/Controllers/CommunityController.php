@@ -72,7 +72,8 @@ public function index(Request $request)
             'nome' => $nome,
             'descricao' => $descricao,
             'tags' => $tagsCsv,
-            'is_member' => $isMember,       // <-- 🔥 IMPORTANTE
+            'is_member' => $isMember,   
+            'members_count' => $c->members_count,   
             'created_by' => $c->created_by,
             'created_at' => $c->created_at ? $c->created_at->toDateTimeString() : null,
             'updated_at' => $c->updated_at ? $c->updated_at->toDateTimeString() : null,

@@ -1,10 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import { Head, Link, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { HiPlus, HiSearch, HiEmojiHappy, HiPaperAirplane } from 'react-icons/hi';
+import { HiPlus, HiSearch, HiEmojiHappy, HiPaperAirplane, HiMenu, HiDotsVertical } from 'react-icons/hi';
 import EmojiPicker from 'emoji-picker-react';
-import Modal from '@/Components/Modal'; // <-- IMPORTANTE
+import Modal from '@/Components/Modal';
 import axios from 'axios';
+import LinkButton from '@/Components/LinkButton';
 
 export default function Index() {
     const { auth, communities } = usePage().props;
@@ -19,6 +20,8 @@ export default function Index() {
     const [showJoinModal, setShowJoinModal] = useState(false);
     const [communityToJoin, setCommunityToJoin] = useState(null);
 
+    const currentUserId = usePage().props.auth.user.id;
+
     const filteredCommunities = useMemo(() => {
         if (!searchQuery.trim()) {
             return communities;
@@ -28,16 +31,15 @@ export default function Index() {
         return communities.filter(community => {
             const matchName = community.nome?.toLowerCase().includes(query);
             const matchTags = community.tags?.toLowerCase().includes(query);
+
             return matchName || matchTags;
         });
     }, [communities, searchQuery]);
 
-    // Obter CSRF token do meta tag
     const getCsrfToken = () => {
         return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
     };
 
-    // ===== Buscar mensagens =====
     const fetchMessages = async (communityId) => {
         if (!communityId) return setMessages([]);
 
@@ -66,7 +68,6 @@ export default function Index() {
         }
     };
 
-    // ===== Enviar mensagem =====
     const sendMessage = async (e) => {
         e.preventDefault();
         if (!message.trim() || !selectedCommunity) return;
@@ -96,7 +97,6 @@ export default function Index() {
             const saved = await res.json();
             setMessages((prevMessages) => [...prevMessages, saved]);
             setMessage('');
-            // Recarregar mensagens para garantir sincronização
             fetchMessages(selectedCommunity.id);
         } catch (error) {
             console.error('Erro ao enviar mensagem:', error);
@@ -104,13 +104,10 @@ export default function Index() {
     };
 
 
-
-    // Adicionar emoji à mensagem
     const handleEmojiClick = (emojiData) => {
         setMessage((prevMessage) => prevMessage + emojiData.emoji);
     };
 
-    // Entrar na comunidade
     const joinCommunity = async () => {
         if (!communityToJoin) return;
 
@@ -139,16 +136,16 @@ export default function Index() {
                     <aside className='flex flex-col border-r border-gray-300'>
                         <div className='py-4 px-4'>
                             <div className='flex flex-row justify-between pt-4'>
-                                <h1 className='text-xl font-bold text-gray-950'>Comunidades</h1>
+                                <h1 className='text-3xl font-bold text-gray-900'>Comunidades</h1>
 
                                 {user && user.is_admin ? (
-                                    <Link
+                                    <LinkButton
                                         href={route('communities.create')}
-                                        className="flex items-center justify-center h-8 w-8 bg-purple-500 text-white rounded-lg hover:bg-purple-400"
+                                        className="mb-6"
                                         title="Criar nova comunidade"
                                     >
                                         <HiPlus className="h-6 w-6" />
-                                    </Link>
+                                    </LinkButton>
                                 ) : null}
                             </div>
                             <div className='relative bg-gray-200 rounded-lg mt-4'>
@@ -183,15 +180,28 @@ export default function Index() {
                                         <img src='/images/community-default.jpg' alt={`Foto da comunidade ${community.nome}`} className='w-full h-full object-cover' />
                                     </div>
 
-                                    <div className='flex flex-col'>
+                                    <div className='flex flex-col mt-2'>
                                         <h2 className="text-lg font-semibold text-gray-800">{community.nome}</h2>
-                                        <p className='text-xs text-gray-500'>{community.tags}</p>
+                                        <p className="text-xs text-gray-500">
+                                            {community.members_count} membros
+                                        </p>
                                     </div>
                                 </div>
                             ))
 
                         ) : (
-                            <p className="text-gray-500 p-4">Nenhuma comunidade encontrada.</p>
+                            <div className="text-center text-gray-500 py-10 border hover:text-gray-500 rounded bg-white shadow flex flex-col items-center gap-4">
+                                <HiSearch className="h-12 w-12 text-gray-400" />
+
+                                <p>Ops!... Nenhuma comunidade encontrada para sua pesquisa.</p>
+                                <p>Tente pesquisar um termo diferente.</p>
+
+                                <LinkButton
+                                    href={route("communities.index")}
+                                >
+                                    Limpar e voltar
+                                </LinkButton>
+                            </div>
                         )}
 
                     </aside>
@@ -208,21 +218,46 @@ export default function Index() {
                                                 className='w-full h-full object-cover'
                                             />
                                         </div>
-                                        <Link href={route('communities.show', selectedCommunity.id)}>
-                                            <h2 className="text-lg font-semibold text-gray-800">
-                                                {selectedCommunity.nome}
-                                            </h2>
-                                        </Link>
+                                        
+                                        <h2 className="text-lg font-semibold text-gray-800">
+                                            {selectedCommunity.nome}
+                                        </h2>
+
+                                        <div className='ml-auto  cursor-pointer'>
+                                            <Link href={route('communities.show', selectedCommunity.id)}>
+                                                <HiDotsVertical className='w-6 h-6'></HiDotsVertical>
+                                            </Link>
+                                        </div>
+
                                     </div>
                                 </div>
 
                                 <div className="p-4 flex flex-col gap-2 overflow-y-auto h-[calc(100%-80px)]">
-                                    {messages.map((msg) => (
-                                        <div key={msg.id} className="flex flex-col">
-                                            <span className="font-semibold text-gray-800">{msg.user?.name ?? 'Usuário'}</span>
-                                            <p className="text-gray-700">{msg.message}</p>
-                                        </div>
-                                    ))}
+                                    {messages.map((msg) => {
+                                        const isOwnMessage = msg.user_id === currentUserId;
+
+                                        return (
+                                            <div
+                                                key={msg.id}
+                                                className={`flex ${isOwnMessage ? "justify-end" : "justify-start"}`} >
+                                                <div
+                                                    className={` max-w-[70%] p-3 rounded-lg shadow
+                                                                        ${isOwnMessage
+                                                            ? "bg-purple-500 text-white rounded-br-none"
+                                                            : "bg-gray-100 text-gray-800 rounded-bl-none"}`}
+                                                >
+                                                    {!isOwnMessage && (
+                                                        <span className="block text-xs font-semibold mb-1 text-grey-600">
+                                                            {msg.user?.name ?? "Usuário"}
+                                                        </span>
+                                                    )}
+
+                                                    <p className="text-sm">{msg.message}</p>
+                                                    <p className="text-xs flex justify-end mt-1">{new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
 
                                 <form className='flex items-center gap-2 p-4 border-t border-gray-300 bg-gray-200 sticky bottom-0' onSubmit={sendMessage}>
@@ -250,7 +285,7 @@ export default function Index() {
                                 </form>
                             </>
                         ) : (
-                            <div className='flex flex-col justify-center items-center h-full text-gray-500 px-8 m-8 gap-4'>
+                            <div className='flex flex-col justify-center items-center h-full text-gray-500 px-2 m-4 gap-4 absolute '>
                                 <img src="/images/woman-holding-flowers.svg" className='w-full' />
                                 <p className="text-justify text-lg">Entre em uma comunidade e compartilhe sua experiência com outras mães.</p>
                             </div>
@@ -299,7 +334,6 @@ export default function Index() {
                     </div>
                 </div>
             </Modal>
-
         </AuthenticatedLayout>
     );
 }
