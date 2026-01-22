@@ -89,6 +89,12 @@ export default function Show({ auth, article, favoritesCount: initialFavoritesCo
                         Publicado em {new Date(article.created_at).toLocaleDateString('pt-BR')}
                     </p>
 
+                    {/* {article.category && (
+                    <p className="text-sm text-gray-500 mb-3">
+                         {article.category.name} <br />
+                    </p>
+                    )} */}
+
                     {article.tags && (
                         <div className="pb-6 mb-2">
                             <div className="flex flex-wrap gap-2">
@@ -168,7 +174,7 @@ export default function Show({ auth, article, favoritesCount: initialFavoritesCo
                     </div>
                 ) : null}
             </div>
-            
+
 
         </AuthenticatedLayout>
     );

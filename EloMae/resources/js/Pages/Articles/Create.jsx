@@ -108,16 +108,12 @@ export default function Create({ auth, categories }) {
                                     menubar: false,
                                     entity_encoding: "raw",
                                     entities: "160,nbsp",
-                                    plugins: [
-                                        'advlist autolink lists link image charmap preview anchor',
-                                        'searchreplace visualblocks code fullscreen',
-                                        'insertdatetime media table paste code help wordcount'
-                                    ],
+                                    plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table paste help wordcount',
                                     toolbar:
                                         'undo redo | formatselect | bold italic backcolor | \n' +
                                         'alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help'
                                 }}
-                                onEditorChange={(content, editor) => setData('content', content)}
+                                onEditorChange={(content) => setData('content', content)}
                             />
                         </div>
                         {errors.content && (
@@ -130,7 +126,7 @@ export default function Create({ auth, categories }) {
                             disabled={processing}
                             className="w-[500px] bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50 transition"
                         >
-                            Salvar
+                            {processing ? 'Salvando...' : 'Criar Artigo'}
                         </button>
                     </div>
                 </form>
