@@ -86,7 +86,8 @@ class ArticleController extends Controller
         }
 
         return Inertia::render('Articles/Show', [
-            'article' => $article->load('author', 'favorites'),
+            'article' => $article->load('author', 'favorites', 'category'),
+            'category_id' => $article->category,
             'userVote' => $userVote,
             'favoritesCount' => $article->favorites()->count(),
             'userFavorited' => $user ? $article->favoritedBy()->where('user_id', $user->id)->exists() : false,
@@ -98,7 +99,8 @@ class ArticleController extends Controller
         $this->authorize('update', $article);
 
         return Inertia::render('Articles/Edit', [
-            'article' => $article
+            'article' => $article,
+            'categories' => Category::all()
         ]);
     }
 
