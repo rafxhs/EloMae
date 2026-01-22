@@ -3,13 +3,14 @@ import { useForm, Link } from '@inertiajs/react';
 import { Editor } from '@tinymce/tinymce-react';
 import LinkButton from '@/Components/LinkButton';
 
-export default function Edit({ auth, article }) {
+export default function Edit({ auth, article, categories }) {
     const { data, setData, patch, processing, errors } = useForm({
         title: article.title,
         subtitle: article.subtitle || '',
         summary: article.summary,
         content: article.content,
         tags: article.tags || '',
+        category_id: article.categories,
     });
 
     const submit = (e) => {
@@ -51,6 +52,26 @@ export default function Edit({ auth, article }) {
                     </div>
 
                     <div>
+                        <label>Categoria</label>
+                        <select
+                            className="w-full border rounded p-2"
+                            value={data.category_id}
+                            onChange={(e) => setData('category_id', e.target.value)}
+                        >
+                            <option value="">Selecione uma categoria</option>
+                            {categories.map((cat) => (
+                                <option key={cat.id} value={cat.id}>
+                                    {cat.name}
+                                </option>
+                            ))}
+                        </select>
+
+                        {errors.category_id && (
+                            <p className="text-red-500">{errors.category_id}</p>
+                        )}
+                    </div>
+
+                    <div>
                         <label className="block font-semibold mb-1">Resumo</label>
                         <textarea
                             className="w-full border rounded p-2"
@@ -84,16 +105,12 @@ export default function Edit({ auth, article }) {
                                     menubar: false,
                                     entity_encoding: "raw",
                                     entities: "160,nbsp",
-                                    plugins: [
-                                        'advlist autolink lists link image charmap preview anchor',
-                                        'searchreplace visualblocks code fullscreen',
-                                        'insertdatetime media table paste code help wordcount'
-                                    ],
+                                    plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table paste help wordcount',
                                     toolbar:
                                         'undo redo | formatselect | bold italic backcolor | \n' +
                                         'alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help'
                                 }}
-                                onEditorChange={(content, editor) => setData('content', content)}
+                                onEditorChange={(content) => setData('content', content)}
                             />
                         </div>
                         {errors.content && (
@@ -101,13 +118,13 @@ export default function Edit({ auth, article }) {
                         )}
                     </div>
 
-
                     <div className="flex gap-2 justify-center">
                         <button
+                            type='submit'
                             disabled={processing}
                             className="w-[300px] h-auto bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50"
                         >
-                            Salvar Alterações
+                            {processing ? 'Salvando...' : 'Salvar Alterações'}
                         </button>
                         <Link
                             href={route('articles.show', article.id)}

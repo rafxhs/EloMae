@@ -23,25 +23,24 @@ export default function Index() {
         <AuthenticatedLayout user={auth.user}>
             <div className="max-w-4xl mx-auto py-10 relative">
 
-                {user && user.is_admin && (
+                {user && user.is_admin ? (
                     <LinkButton
                         href={route('articles.create')}
                         className="absolute left-4 flex items-center justify-center"
                     >
                         <HiPlus className="h-6 w-6" />
                     </LinkButton>
-                )}
+                ):null}
 
                 <div className="flex items-center justify-between gap-10 mb-6 mt-6 border-b pb-4 shadow-lg">
 
                     <div className="max-w-md">
-                            <h1 className="text-3xl font-bold text-gray-900">
+                            <h1 className="text-3xl font-bold text-purple-600">
                                 Artigos
                             </h1>
                             <p className="mt-2 text-gray-600">
                                 Explore nossos artigos sobre maternidade, direitos, bem-estar, desenvolvimento infantil e muito mais.
                             </p>
-
                     </div>
 
                     <img
