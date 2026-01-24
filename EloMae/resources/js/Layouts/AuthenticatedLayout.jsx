@@ -4,6 +4,7 @@ import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
+import { HiUserCircle } from 'react-icons/hi';
 
 export default function AuthenticatedLayout({ header, children }) {
     const user = usePage().props.auth.user;
@@ -33,13 +34,13 @@ export default function AuthenticatedLayout({ header, children }) {
                             </div>
                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink
-                                    href={route('mapa')}
-                                    active={route().current('mapa')}
+                                    href={route("articles.index")}
+                                    active={route().current("articles.index")}
                                 >
-                                    Mapa
+                                    Artigos
                                 </NavLink>
                             </div>
-                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                            <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink
                                     href={route('communities.index')}
                                     active={route().current('communities.index')}
@@ -47,13 +48,12 @@ export default function AuthenticatedLayout({ header, children }) {
                                     Comunidades
                                 </NavLink>
                             </div>
-
                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink
-                                    href={route("articles.index")}
-                                    active={route().current("articles.index")}
+                                    href={route('mapa')}
+                                    active={route().current('mapa')}
                                 >
-                                    Artigos
+                                    Mapa
                                 </NavLink>
                             </div>
 
@@ -69,6 +69,8 @@ export default function AuthenticatedLayout({ header, children }) {
                                                 className="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
                                             >
                                                 {user.name}
+                                                <HiUserCircle className="ml-2 inline-block w-6 h-6 text-purple-700" />
+
 
                                                 <svg
                                                     className="-me-0.5 ms-2 h-4 w-4"
@@ -90,14 +92,14 @@ export default function AuthenticatedLayout({ header, children }) {
                                         <Dropdown.Link
                                             href={route('profile.edit')}
                                         >
-                                            Profile
+                                            Perfil
                                         </Dropdown.Link>
                                         <Dropdown.Link
                                             href={route('logout')}
                                             method="post"
                                             as="button"
                                         >
-                                            Log Out
+                                            Sair
                                         </Dropdown.Link>
                                     </Dropdown.Content>
                                 </Dropdown>
