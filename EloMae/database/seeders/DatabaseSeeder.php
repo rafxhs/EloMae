@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         AdminUserSeeder::class,
         CategorySeeder::class,
         CommunitySeeder::class,
+        DevelopmentPhaseSeeder::class,
         ArticleSeeder::class,
         InstitutionSeeder::class,
     ]);
