@@ -79,6 +79,9 @@ export default function NotificationBell() {
             headers: {
                 Accept: "application/json",
                 "X-Requested-With": "XMLHttpRequest",
+                "X-CSRF-TOKEN": document
+                    .querySelector('meta[name="csrf-token"]')
+                    .getAttribute("content"),
             },
         });
 

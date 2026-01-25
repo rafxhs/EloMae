@@ -4,40 +4,32 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Notifications\DatabaseNotification;
 
 class NotificationController extends Controller
 {
-    /**
-     * Retorna todas as notificações do usuário autenticado
-     */
-    public function index(Request $request)
-    {
-        return $request->user()
-            ->notifications()
-            ->orderBy('created_at', 'desc')
-            ->get();
-    }
-
-    /**
-     * Retorna a quantidade de notificações não lidas
-     */
     public function unreadCount(Request $request)
     {
-        return [
-            'unread' => $request->user()
-                ->unreadNotifications()
-                ->count()
-        ];
+        return response()->json([
+            'unread' => $request->user()->unreadNotifications()->count(),
+        ]);
     }
 
-    /**
-     * Marca uma notificação como lida
-     */
-    public function markAsRead(Request $request, string $id)
+    public function index(Request $request)
     {
-        $notification = $request->user()
-            ->notifications()
-            ->where('id', $id)
+        return response()->json(
+            $request->user()
+                ->notifications()
+                ->latest()
+                ->take(20)
+                ->get()
+        );
+    }
+
+    public function markAsRead(Request $request, $id)
+    {
+        $notification = DatabaseNotification::where('id', $id)
+            ->where('notifiable_id', $request->user()->id)
             ->firstOrFail();
 
         $notification->markAsRead();
