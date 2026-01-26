@@ -9,10 +9,30 @@ class DevelopmentPhaseNotification extends Notification
 {
     use Queueable;
 
+    protected string $title;
+    protected string $message;
+    protected array $articles;
+    protected array $phase;
+
     public function __construct(
-        public string $title,
-        public string $message
-    ) {}
+        string $title,
+        string $message,
+        $phase,
+        $articles
+    ) {
+        $this->title = $title;
+        $this->message = $message;
+        $this->phase = [
+            'id' => $phase->id,
+            'title' => $phase->title,
+        ];
+
+        // Apenas id + título (pronto para UI)
+        $this->articles = $articles->map(fn ($article) => [
+            'id' => $article->id,
+            'title' => $article->title,
+        ])->values()->toArray();
+    }
 
     public function via($notifiable): array
     {
@@ -24,6 +44,8 @@ class DevelopmentPhaseNotification extends Notification
         return [
             'title' => $this->title,
             'message' => $this->message,
+            'phase' => $this->phase,
+            'articles' => $this->articles,
         ];
     }
 }

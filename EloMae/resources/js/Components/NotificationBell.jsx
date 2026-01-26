@@ -18,24 +18,29 @@ export default function NotificationBell() {
         }
 
         document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
+        return () =>
+            document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
     /**
-     * Busca quantidade de não lidas
+     * Busca quantidade de notificações não lidas
      */
     const fetchUnreadCount = async () => {
-        const response = await fetch("/notifications/unread-count", {
-            credentials: "include",
-            headers: {
-                Accept: "application/json",
-                "X-Requested-With": "XMLHttpRequest",
-            },
-        });
+        try {
+            const response = await fetch("/notifications/unread-count", {
+                credentials: "include",
+                headers: {
+                    Accept: "application/json",
+                    "X-Requested-With": "XMLHttpRequest",
+                },
+            });
 
-        if (response.ok) {
-            const data = await response.json();
-            setHasUnread(data.unread > 0);
+            if (response.ok) {
+                const data = await response.json();
+                setHasUnread(data.unread > 0);
+            }
+        } catch (error) {
+            console.error("Erro ao buscar contador de notificações:", error);
         }
     };
 
@@ -43,22 +48,26 @@ export default function NotificationBell() {
      * Busca notificações completas
      */
     const fetchNotifications = async () => {
-        const response = await fetch("/notifications/data", {
-            credentials: "include",
-            headers: {
-                Accept: "application/json",
-                "X-Requested-With": "XMLHttpRequest",
-            },
-        });
+        try {
+            const response = await fetch("/notifications/data", {
+                credentials: "include",
+                headers: {
+                    Accept: "application/json",
+                    "X-Requested-With": "XMLHttpRequest",
+                },
+            });
 
-        if (response.ok) {
-            const data = await response.json();
-            setNotifications(data);
+            if (response.ok) {
+                const data = await response.json();
+                setNotifications(data);
+            }
+        } catch (error) {
+            console.error("Erro ao buscar notificações:", error);
         }
     };
 
     /**
-     * Ao abrir o dropdown
+     * Abre / fecha dropdown
      */
     const toggleDropdown = async () => {
         const next = !open;
@@ -70,28 +79,32 @@ export default function NotificationBell() {
     };
 
     /**
-     * Marca como lida
+     * Marca notificação como lida
      */
     const markAsRead = async (id) => {
-        await fetch(`/notifications/${id}/read`, {
-            method: "POST",
-            credentials: "include",
-            headers: {
-                Accept: "application/json",
-                "X-Requested-With": "XMLHttpRequest",
-                "X-CSRF-TOKEN": document
-                    .querySelector('meta[name="csrf-token"]')
-                    .getAttribute("content"),
-            },
-        });
+        try {
+            await fetch(`/notifications/${id}/read`, {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    Accept: "application/json",
+                    "X-Requested-With": "XMLHttpRequest",
+                    "X-CSRF-TOKEN": document
+                        .querySelector('meta[name="csrf-token"]')
+                        .getAttribute("content"),
+                },
+            });
 
-        setNotifications((prev) =>
-            prev.map((n) =>
-                n.id === id ? { ...n, read_at: new Date() } : n
-            )
-        );
+            setNotifications((prev) =>
+                prev.map((n) =>
+                    n.id === id ? { ...n, read_at: new Date() } : n
+                )
+            );
 
-        fetchUnreadCount();
+            fetchUnreadCount();
+        } catch (error) {
+            console.error("Erro ao marcar notificação como lida:", error);
+        }
     };
 
     /**
@@ -118,12 +131,12 @@ export default function NotificationBell() {
 
             {/* Dropdown */}
             {open && (
-                <div className="absolute right-0 mt-2 w-80 rounded-md bg-white shadow-lg border border-gray-200 z-50">
+                <div className="absolute right-0 mt-2 w-96 rounded-md bg-white shadow-lg border border-gray-200 z-50">
                     <div className="px-4 py-2 border-b text-sm font-semibold text-gray-700">
                         Notificações
                     </div>
 
-                    <div className="max-h-80 overflow-y-auto">
+                    <div className="max-h-96 overflow-y-auto">
                         {notifications.length === 0 && (
                             <div className="px-4 py-4 text-sm text-gray-500">
                                 Nenhuma notificação.
@@ -133,19 +146,55 @@ export default function NotificationBell() {
                         {notifications.map((notification) => (
                             <div
                                 key={notification.id}
-                                onClick={() => markAsRead(notification.id)}
-                                className={`px-4 py-3 text-sm cursor-pointer hover:bg-gray-50 ${
+                                onClick={() =>
+                                    !notification.read_at &&
+                                    markAsRead(notification.id)
+                                }
+                                className={`px-4 py-3 text-sm cursor-pointer hover:bg-gray-50 border-b ${
                                     notification.read_at
                                         ? "text-gray-500"
                                         : "bg-purple-50 text-gray-800"
                                 }`}
                             >
+                                {/* Título */}
                                 <div className="font-medium">
                                     {notification.data.title}
                                 </div>
-                                <div className="text-xs mt-1">
+
+                                {/* Mensagem */}
+                                <div className="text-xs mt-1 text-gray-600">
                                     {notification.data.message}
                                 </div>
+
+                                {/* Artigos recomendados */}
+                                {notification.data.articles?.length > 0 && (
+                                    <div className="mt-2">
+                                        <div className="text-xs font-semibold text-gray-500 mb-1">
+                                            Leia sobre essa fase:
+                                        </div>
+
+                                        <ul className="space-y-1">
+                                            {notification.data.articles.map(
+                                                (article) => (
+                                                    <li key={article.id}>
+                                                        <a
+                                                            href={`/articles/${article.id}`}
+                                                            className="text-xs text-purple-600 hover:underline"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                markAsRead(
+                                                                    notification.id
+                                                                );
+                                                            }}
+                                                        >
+                                                            • {article.title}
+                                                        </a>
+                                                    </li>
+                                                )
+                                            )}
+                                        </ul>
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>
