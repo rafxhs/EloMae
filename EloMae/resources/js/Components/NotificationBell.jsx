@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { HiBell } from "react-icons/hi";
+import { HiBell, HiCalculator } from "react-icons/hi";
 
 export default function NotificationBell() {
     const [hasUnread, setHasUnread] = useState(false);
@@ -166,11 +166,18 @@ export default function NotificationBell() {
                                     {notification.data.message}
                                 </div>
 
+                                {/* Texto auxiliar */}
+                                {notification.data.helper_text && (
+                                    <div className="text-xs mt-2 text-gray-500 italic">
+                                        {notification.data.helper_text}
+                                    </div>
+                                )}
+
                                 {/* Artigos recomendados */}
                                 {notification.data.articles?.length > 0 && (
                                     <div className="mt-2">
                                         <div className="text-xs font-semibold text-gray-500 mb-1">
-                                            Leia sobre essa fase:
+                                            Artigos:
                                         </div>
 
                                         <ul className="space-y-1">

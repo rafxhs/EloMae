@@ -9,27 +9,21 @@ class DevelopmentPhaseNotification extends Notification
 {
     use Queueable;
 
-    protected string $title;
-    protected string $message;
+    protected string $babyName;
+    protected string $phaseTitle;
     protected array $articles;
-    protected array $phase;
 
     public function __construct(
-        string $title,
-        string $message,
-        $phase,
+        string $babyName,
+        string $phaseTitle,
         $articles
     ) {
-        $this->title = $title;
-        $this->message = $message;
-        $this->phase = [
-            'id' => $phase->id,
-            'title' => $phase->title,
-        ];
+        $this->babyName   = $babyName;
+        $this->phaseTitle = $phaseTitle;
 
         // Apenas id + título (pronto para UI)
         $this->articles = $articles->map(fn ($article) => [
-            'id' => $article->id,
+            'id'    => $article->id,
             'title' => $article->title,
         ])->values()->toArray();
     }
@@ -42,9 +36,10 @@ class DevelopmentPhaseNotification extends Notification
     public function toDatabase($notifiable): array
     {
         return [
-            'title' => $this->title,
-            'message' => $this->message,
-            'phase' => $this->phase,
+            'title' => 'Seu bebê entrou em uma nova fase!',
+            'message' => "{$this->babyName} entrou na fase {$this->phaseTitle}",
+            'helper_text' =>
+                'Para entender melhor essa nova fase do seu bebê, separamos alguns artigos que podem te ajudar.',
             'articles' => $this->articles,
         ];
     }

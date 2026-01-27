@@ -17,8 +17,6 @@ class NotifyDependentDevelopmentPhase extends Command
     public function handle(): int
     {
         $service = app(DevelopmentPhaseService::class);
-
-
         $notifiedInThisRun = [];
 
         Dependent::whereNotNull('birth_date')
@@ -27,13 +25,11 @@ class NotifyDependentDevelopmentPhase extends Command
 
                 foreach ($dependents as $dependent) {
 
-                    // Fase atual
                     $phase = $service->getCurrentPhaseForDependent($dependent);
                     if (! $phase) {
                         continue;
                     }
 
-                    // Evita duplicação histórica (dependente + fase)
                     if ($dependent->hasBeenNotifiedForPhase($phase->id)) {
                         continue;
                     }
@@ -46,12 +42,12 @@ class NotifyDependentDevelopmentPhase extends Command
                         continue;
                     }
 
-                    // Busca artigos
+                    // Artigos da fase (máx. 3)
                     $articles = $phase->articles()
                         ->take(3)
                         ->get();
 
-                    // Registra controle histórico
+                    // Controle interno
                     DependentPhaseNotification::create([
                         'dependent_id' => $dependent->id,
                         'development_phase_id' => $phase->id,
@@ -61,18 +57,16 @@ class NotifyDependentDevelopmentPhase extends Command
                     // Envia notificação
                     $dependent->user->notify(
                         new DevelopmentPhaseNotification(
-                            'Nova fase de desenvolvimento',
-                            "{$dependent->name} entrou na fase {$phase->title}",
-                            $phase,
+                            $dependent->name,
+                            $phase->title,
                             $articles
                         )
                     );
 
-                    // Marca como notificado nesta execução
                     $notifiedInThisRun[$key] = true;
 
                     $this->info(
-                        "Notificação enviada | Dependente: {$dependent->name} | Fase: {$phase->title}"
+                        "Notificação enviada | {$dependent->name} | {$phase->title}"
                     );
                 }
             });

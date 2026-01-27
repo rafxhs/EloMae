@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class DependentPhaseNotification extends Model
 {
-    protected $table = 'dep_phase_noti'; // ← AJUSTE AQUI
+    protected $table = 'dep_phase_noti'; 
 
     public $timestamps = false;
 
