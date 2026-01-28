@@ -1,8 +1,8 @@
 import NavLink from '@/Components/NavLink';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 
-export default function Dashboard({ auth, needsCompletion }) {
+export default function Dashboard({ auth, needsCompletion, communities = [] }) {
     return (
         <AuthenticatedLayout
             header={
@@ -15,21 +15,63 @@ export default function Dashboard({ auth, needsCompletion }) {
 
             <div className="py-12">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                    <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                        {needsCompletion && (
-                           <div className="flex items-center justify-between p-6 bg-pink-100 border border-pink-300">
-                            <span>Complete seu cadastro para aproveitar melhor a plataforma!</span>
-                            <NavLink href="/profile" className="p-10 text-white bg-pink-500 rounded-lg hover:bg-pink-700 hover:text-white">
+
+                    {/* Aviso de cadastro incompleto */}
+                    {needsCompletion && (
+                        <div className="mb-4 flex items-center justify-between p-6 bg-pink-100 border border-pink-300 rounded-lg">
+                            <span>
+                                Complete seu cadastro para aproveitar melhor a plataforma!
+                            </span>
+                            <NavLink
+                                href="/profile"
+                                className="px-6 py-3 text-white bg-pink-500 rounded-lg hover:bg-pink-700"
+                            >
                                 Completar Cadastro
                             </NavLink>
-                           </div>
-                        )}
-                    </div>
-                    <div className="mt-4 overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-gray-900">
-                            Elo Mãe
+                        </div>
+                    )}
+
+                    {/* Comunidades da usuária */}
+                    <div className="bg-white shadow-sm sm:rounded-lg">
+                        <div className="p-6">
+                            <h3 className="mb-4 text-lg font-semibold text-gray-800">
+                                Minhas Comunidades
+                            </h3>
+
+                            {communities.length === 0 ? (
+                                <p className="text-gray-500">
+                                    Você ainda não participa de nenhuma comunidade.
+                                </p>
+                            ) : (
+                                <ul className="space-y-4">
+                                    {communities.map((community) => (
+                                        <li
+                                            key={community.id}
+                                            className="p-4 border rounded-lg hover:bg-gray-50"
+                                        >
+                                            <Link
+                                                href={`/communities/${community.id}`}
+                                                className="text-lg font-medium text-pink-600 hover:underline"
+                                            >
+                                                {community.nome}
+                                            </Link>
+
+                                            {community.descricao && (
+                                                <p className="mt-1 text-sm text-gray-600">
+                                                    {community.descricao}
+                                                </p>
+                                            )}
+
+                                            <p className="mt-2 text-xs text-gray-500">
+                                                {community.members_count} participantes
+                                            </p>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
                         </div>
                     </div>
+
                 </div>
             </div>
         </AuthenticatedLayout>
