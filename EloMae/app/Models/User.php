@@ -6,6 +6,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\ArticleFavorite;
+
 
 class User extends Authenticatable
 {
@@ -66,5 +68,18 @@ class User extends Authenticatable
     public function communities()
     {
         return $this->belongsToMany(Community::class, 'community_user');
+    }
+
+    public function articleFavorites()
+    {
+        return $this->hasMany(ArticleFavorite::class);
+    }
+
+    public function favoriteArticles()
+    {
+        return $this->belongsToMany(
+            Article::class,
+            'article_favorites'
+        )->withTimestamps();
     }
 }

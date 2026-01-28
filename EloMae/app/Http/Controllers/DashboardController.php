@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Community;
 use App\Models\DependentPhaseNotification;
+use App\Models\Article;
 
 class DashboardController extends Controller
 {
@@ -14,7 +15,7 @@ class DashboardController extends Controller
         $user = $request->user()->load([
             'address',
             'dependents',
-            'communities'
+            'communities',
         ]);
 
         /*
@@ -30,7 +31,6 @@ class DashboardController extends Controller
             || empty($user->address->state)
             || empty($user->address->zip);
 
-        // Se a contagem de filhos for > 0, verificar dependentes
         if (! $needsCompletion) {
             $childrenCount = (int) ($user->children_count ?? 0);
 
@@ -59,13 +59,31 @@ class DashboardController extends Controller
             ->get()
             ->map(function (Community $community) {
                 return [
-                    'id' => $community->id,
-                    'nome' => $community->name,
-                    'descricao' => $community->description,
+                    'id'            => $community->id,
+                    'nome'          => $community->name,
+                    'descricao'     => $community->description,
                     'members_count' => $community->members_count,
-                    'created_at' => $community->created_at?->toDateTimeString(),
+                    'created_at'    => $community->created_at?->toDateTimeString(),
                 ];
             });
+
+        /*
+        |--------------------------------------------------------------------------
+        | Artigos Favoritos da Usuária (estrela)
+        |--------------------------------------------------------------------------
+        */
+        $favoriteArticles = $user->favoriteArticles()
+            ->latest('article_favorites.created_at')
+            ->take(6)
+            ->get()
+            ->map(function (Article $article) {
+                return [
+                    'id'      => $article->id,
+                    'title'   => $article->title,
+                    'summary' => $article->summary,
+                ];
+            })
+            ->values();
 
         /*
         |--------------------------------------------------------------------------
@@ -88,8 +106,8 @@ class DashboardController extends Controller
                 ->take(6)
                 ->map(function ($article) {
                     return [
-                        'id' => $article->id,
-                        'title' => $article->title,
+                        'id'      => $article->id,
+                        'title'   => $article->title,
                         'summary' => $article->summary,
                     ];
                 })
@@ -105,9 +123,10 @@ class DashboardController extends Controller
             'auth' => [
                 'user' => $user,
             ],
-            'needsCompletion'      => $needsCompletion,
-            'communities'          => $communities,
-            'recommendedArticles'  => $recommendedArticles,
+            'needsCompletion'     => $needsCompletion,
+            'communities'         => $communities,
+            'favoriteArticles'    => $favoriteArticles,
+            'recommendedArticles' => $recommendedArticles,
         ]);
     }
 }
