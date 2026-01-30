@@ -133,7 +133,7 @@ export default function UpdateProfileInformationForm({
     return (
         <section className={className}>
             <header>
-                <h2 className="text-xl font-semibold text-gray-900">Informações do seu perfil 
+                <h2 className="text-xl font-semibold text-gray-900">Informações do seu perfil
                      <HiUserCircle className="ml-2 inline-block w-8 h-8" />
                 </h2>
                 <p className="mt-1 text-sm text-gray-600">
@@ -266,9 +266,14 @@ export default function UpdateProfileInformationForm({
                                         id={`dependents.${index}.birth_date`}
                                         type="date"
                                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                                        max={new Date().toISOString().split('T')[0]}
+                                        min={new Date(
+                                            new Date().setFullYear(new Date().getFullYear() - 18)
+                                        ).toISOString().split('T')[0]}
                                         value={(data.dependents?.[index]?.birth_date) || ''}
                                         onChange={(e) => updateDependentField(index, 'birth_date', e.target.value)}
                                     />
+
                                     <InputError className="mt-2" message={errors?.[`dependents.${index}.birth_date`]} />
                                 </div>
 
