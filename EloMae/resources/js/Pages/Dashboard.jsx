@@ -6,8 +6,9 @@ export default function Dashboard({
     auth,
     needsCompletion,
     communities = [],
-    favoriteArticles = [],
     recommendedArticles = [],
+    favoriteArticles = [],
+    recentlyViewedArticles = [],
 }) {
     return (
         <AuthenticatedLayout
@@ -169,8 +170,38 @@ export default function Dashboard({
                         </div>
                     </div>
 
+                    {/* Artigos visualizados recentemente */}
+                    {recentlyViewedArticles.length > 0 && (
+                        <div className="bg-white shadow-sm sm:rounded-lg">
+                            <div className="p-6">
+                                <h3 className="mb-4 text-lg font-semibold text-gray-800">
+                                    Artigos vistos recentemente
+                                </h3>
 
+                                <ul className="space-y-4">
+                                    {recentlyViewedArticles.map((article) => (
+                                        <li
+                                            key={article.id}
+                                            className="p-4 border rounded-lg hover:bg-gray-50 transition"
+                                        >
+                                            <Link
+                                                href={`/articles/${article.id}`}
+                                                className="text-lg font-medium text-pink-600 hover:underline"
+                                            >
+                                                {article.title}
+                                            </Link>
 
+                                            {article.summary && (
+                                                <p className="mt-1 text-sm text-gray-600">
+                                                    {article.summary}
+                                                </p>
+                                            )}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </AuthenticatedLayout>

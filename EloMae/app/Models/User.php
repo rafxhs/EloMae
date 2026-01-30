@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\ArticleFavorite;
+use App\Models\ArticleView;
 
 
 class User extends Authenticatable
@@ -81,5 +82,20 @@ class User extends Authenticatable
             Article::class,
             'article_favorites'
         )->withTimestamps();
+    }
+
+    public function articleViews()
+    {
+        return $this->hasMany(ArticleView::class);
+    }
+
+    public function recentlyViewedArticles()
+    {
+        return $this->belongsToMany(
+            Article::class,
+            'article_views'
+        )
+            ->withPivot('viewed_at')
+            ->orderByDesc('article_views.viewed_at');
     }
 }

@@ -12,17 +12,14 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
+        // Usuária autenticada com relações básicas
         $user = $request->user()->load([
             'address',
             'dependents',
             'communities',
         ]);
 
-        /*
-        |--------------------------------------------------------------------------
-        | Verifica se o perfil do usuário está completo
-        |--------------------------------------------------------------------------
-        */
+        // Verifica se o perfil está incompleto
         $needsCompletion = empty($user->birth_date)
             || $user->children_count === null
             || ! $user->address
@@ -31,6 +28,7 @@ class DashboardController extends Controller
             || empty($user->address->state)
             || empty($user->address->zip);
 
+        // Valida dados dos dependentes
         if (! $needsCompletion) {
             $childrenCount = (int) ($user->children_count ?? 0);
 
@@ -48,11 +46,7 @@ class DashboardController extends Controller
             }
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Comunidades da usuária
-        |--------------------------------------------------------------------------
-        */
+        // Comunidades da usuária
         $communities = $user->communities()
             ->withCount('users as members_count')
             ->orderBy('communities.created_at', 'desc')
@@ -67,11 +61,7 @@ class DashboardController extends Controller
                 ];
             });
 
-        /*
-        |--------------------------------------------------------------------------
-        | Artigos Favoritos da Usuária (estrela)
-        |--------------------------------------------------------------------------
-        */
+        // Artigos favoritados pela usuária
         $favoriteArticles = $user->favoriteArticles()
             ->latest('article_favorites.created_at')
             ->take(6)
@@ -85,11 +75,20 @@ class DashboardController extends Controller
             })
             ->values();
 
-        /*
-        |--------------------------------------------------------------------------
-        | Artigos recomendados com base na última fase notificada
-        |--------------------------------------------------------------------------
-        */
+        // Artigos vistos recentemente
+        $recentlyViewedArticles = $user->recentlyViewedArticles()
+            ->take(6)
+            ->get()
+            ->map(function (Article $article) {
+                return [
+                    'id'      => $article->id,
+                    'title'   => $article->title,
+                    'summary' => $article->summary,
+                ];
+            })
+            ->values();
+
+        // Artigos recomendados com base na última fase notificada
         $recommendedArticles = [];
 
         $lastPhaseNotification = DependentPhaseNotification::whereHas('dependent', function ($query) use ($user) {
@@ -114,19 +113,16 @@ class DashboardController extends Controller
                 ->values();
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Renderização do Dashboard
-        |--------------------------------------------------------------------------
-        */
+        // Renderização do dashboard
         return Inertia::render('Dashboard', [
             'auth' => [
                 'user' => $user,
             ],
-            'needsCompletion'     => $needsCompletion,
-            'communities'         => $communities,
-            'favoriteArticles'    => $favoriteArticles,
-            'recommendedArticles' => $recommendedArticles,
+            'needsCompletion'        => $needsCompletion,
+            'communities'            => $communities,
+            'favoriteArticles'       => $favoriteArticles,
+            'recentlyViewedArticles' => $recentlyViewedArticles,
+            'recommendedArticles'    => $recommendedArticles,
         ]);
     }
 }
