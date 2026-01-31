@@ -8,9 +8,10 @@ import axios from 'axios';
 import LinkButton from '@/Components/LinkButton';
 
 export default function Index() {
-    const { auth, communities } = usePage().props;
+    const { auth, communities: initialCommunities } = usePage().props;
     const user = auth?.user ?? null;
 
+    const [communities, setCommunities] = useState(initialCommunities);
     const [selectedCommunity, setSelectedCommunity] = useState(null);
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
@@ -103,7 +104,6 @@ export default function Index() {
         }
     };
 
-
     const handleEmojiClick = (emojiData) => {
         setMessage((prevMessage) => prevMessage + emojiData.emoji);
     };
@@ -115,10 +115,17 @@ export default function Index() {
             await axios.post(`/communities/${communityToJoin.id}/join`);
 
             setShowJoinModal(false);
-            communityToJoin.is_member = true;
-            setSelectedCommunity(communityToJoin);
-            fetchMessages(communityToJoin.id);
 
+            setCommunities((prev) =>
+                prev.map((c) =>
+                    c.id === communityToJoin.id
+                        ? { ...c, is_member: true, unread_count: 0 }
+                        : c
+                )
+            );
+
+            setSelectedCommunity({ ...communityToJoin, is_member: true, unread_count: 0 });
+            fetchMessages(communityToJoin.id);
         } catch (error) {
             console.error("Erro ao entrar na comunidade:", error);
         }
@@ -169,66 +176,70 @@ export default function Index() {
                                             setCommunityToJoin(community);
                                             setShowJoinModal(true);
                                         } else {
-                                            setSelectedCommunity(community);
+                                            setSelectedCommunity({ ...community, unread_count: 0 });
+                                            setCommunities((prev) =>
+                                                prev.map((c) =>
+                                                    c.id === community.id
+                                                        ? { ...c, unread_count: 0 }
+                                                        : c
+                                                )
+                                            );
                                             fetchMessages(community.id);
                                         }
                                     }}
-                                    className={`flex items-center gap-3 mx-3 px-2 py-3 rounded-lg cursor-pointer
+                                    className={`flex items-center mx-3 px-2 py-3 rounded-lg cursor-pointer
                                         ${selectedCommunity?.id === community.id ? 'bg-gray-300' : 'hover:bg-gray-200'}`}
                                 >
-                                    <div className='w-12 h-12 rounded-full overflow-hidden'>
+                                    <div className='w-12 h-12 rounded-full overflow-hidden mr-3'>
                                         <img src='/images/community-default.jpg' alt={`Foto da comunidade ${community.nome}`} className='w-full h-full object-cover' />
                                     </div>
 
-                                    <div className='flex flex-col mt-2'>
+                                    <div className='flex flex-col flex-1'>
                                         <h2 className="text-lg font-semibold text-gray-800">{community.nome}</h2>
                                         <p className="text-xs text-gray-500">
                                             {community.members_count} membros
                                         </p>
                                     </div>
+
+                                    {community.unread_count > 0 && (
+                                        <span className="ml-auto text-xs bg-red-500 text-white px-2 py-0.5 rounded-full">
+                                            {community.unread_count}
+                                        </span>
+                                    )}
                                 </div>
                             ))
-
                         ) : (
                             <div className="text-center text-gray-500 py-10 border hover:text-gray-500 rounded bg-white shadow flex flex-col items-center gap-4">
                                 <HiSearch className="h-12 w-12 text-gray-400" />
-
                                 <p>Ops!... Nenhuma comunidade encontrada para sua pesquisa.</p>
                                 <p>Tente pesquisar um termo diferente.</p>
-
-                                <LinkButton
-                                    href={route("communities.index")}
-                                >
+                                <LinkButton href={route("communities.index")}>
                                     Limpar e voltar
                                 </LinkButton>
                             </div>
                         )}
-
                     </aside>
 
                     <div className='flex flex-col bg-gray-200 flex-1 justify-between'>
                         {selectedCommunity ? (
                             <>
-                                <div>
-                                    <div className='flex items-center gap-3 border-b border-gray-300 p-4'>
-                                        <div className='w-12 h-12 rounded-full overflow-hidden'>
-                                            <img
-                                                src="/images/community-default.jpg"
-                                                alt={selectedCommunity.nome}
-                                                className='w-full h-full object-cover'
-                                            />
-                                        </div>
-                                        
-                                        <h2 className="text-lg font-semibold text-gray-800">
-                                            {selectedCommunity.nome}
-                                        </h2>
+                                <div className='flex items-center gap-3 border-b border-gray-300 p-4'>
+                                    <div className='w-12 h-12 rounded-full overflow-hidden'>
+                                        <img
+                                            src="/images/community-default.jpg"
+                                            alt={selectedCommunity.nome}
+                                            className='w-full h-full object-cover'
+                                        />
+                                    </div>
 
-                                        <div className='ml-auto  cursor-pointer'>
-                                            <Link href={route('communities.show', selectedCommunity.id)}>
-                                                <HiDotsVertical className='w-6 h-6'></HiDotsVertical>
-                                            </Link>
-                                        </div>
+                                    <h2 className="text-lg font-semibold text-gray-800">
+                                        {selectedCommunity.nome}
+                                    </h2>
 
+                                    <div className='ml-auto cursor-pointer'>
+                                        <Link href={route('communities.show', selectedCommunity.id)}>
+                                            <HiDotsVertical className='w-6 h-6' />
+                                        </Link>
                                     </div>
                                 </div>
 
@@ -239,10 +250,11 @@ export default function Index() {
                                         return (
                                             <div
                                                 key={msg.id}
-                                                className={`flex ${isOwnMessage ? "justify-end" : "justify-start"}`} >
+                                                className={`flex ${isOwnMessage ? "justify-end" : "justify-start"}`}
+                                            >
                                                 <div
-                                                    className={` max-w-[70%] p-3 rounded-lg shadow
-                                                                        ${isOwnMessage
+                                                    className={`max-w-[70%] p-3 rounded-lg shadow
+                                                        ${isOwnMessage
                                                             ? "bg-purple-500 text-white rounded-br-none"
                                                             : "bg-gray-100 text-gray-800 rounded-bl-none"}`}
                                                 >
@@ -253,14 +265,19 @@ export default function Index() {
                                                     )}
 
                                                     <p className="text-sm">{msg.message}</p>
-                                                    <p className="text-xs flex justify-end mt-1">{new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                                                    <p className="text-xs flex justify-end mt-1">
+                                                        {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                    </p>
                                                 </div>
                                             </div>
                                         );
                                     })}
                                 </div>
 
-                                <form className='flex items-center gap-2 p-4 border-t border-gray-300 bg-gray-200 sticky bottom-0' onSubmit={sendMessage}>
+                                <form
+                                    className='flex items-center gap-2 p-4 border-t border-gray-300 bg-gray-200 sticky bottom-0'
+                                    onSubmit={sendMessage}
+                                >
                                     <div className='relative'>
                                         <HiEmojiHappy
                                             className="text-gray-500 hover:text-gray-400 h-7 w-7 cursor-pointer"
@@ -285,9 +302,11 @@ export default function Index() {
                                 </form>
                             </>
                         ) : (
-                            <div className='flex flex-col justify-center items-center h-full text-gray-500 px-2 m-4 gap-4 absolute '>
+                            <div className='flex flex-col justify-center items-center h-full text-gray-500 px-2 m-4 gap-4 absolute'>
                                 <img src="/images/woman-holding-flowers.svg" className='w-full' />
-                                <p className="text-justify text-lg">Entre em uma comunidade e compartilhe sua experiência com outras mães.</p>
+                                <p className="text-justify text-lg">
+                                    Entre em uma comunidade e compartilhe sua experiência com outras mães.
+                                </p>
                             </div>
                         )}
                     </div>

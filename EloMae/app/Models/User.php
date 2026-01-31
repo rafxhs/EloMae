@@ -68,7 +68,9 @@ class User extends Authenticatable
 
     public function communities()
     {
-        return $this->belongsToMany(Community::class, 'community_user');
+        return $this->belongsToMany(Community::class, 'community_user')
+        ->withPivot('last_read_at')
+        ->withTimestamps();
     }
 
     public function articleFavorites()

@@ -63,8 +63,26 @@ public function index(Request $request)
 
         // Verificar se o usuário já é membro
         $isMember = false;
+        $lastReadAt = null;
+        $unreadCount = 0;
+
         if ($request->user()) {
-            $isMember = $c->users()->where('user_id', $request->user()->id)->exists();
+            $user = $request->user();
+
+            $pivot = $c->users()
+                ->where('user_id', $user->id)
+                ->first();
+
+            if ($pivot) {
+                $isMember = true;
+                $lastReadAt = $pivot->pivot->last_read_at;
+
+                if ($lastReadAt) {
+                    $unreadCount = $c->messages()
+                        ->where('created_at', '>', $lastReadAt)
+                        ->count();
+                }
+            }
         }
 
         return [
@@ -72,8 +90,9 @@ public function index(Request $request)
             'nome' => $nome,
             'descricao' => $descricao,
             'tags' => $tagsCsv,
-            'is_member' => $isMember,   
-            'members_count' => $c->members_count,   
+            'is_member' => $isMember,
+            'members_count' => $c->members_count,
+            'unread_count' => $unreadCount,
             'created_by' => $c->created_by,
             'created_at' => $c->created_at ? $c->created_at->toDateTimeString() : null,
             'updated_at' => $c->updated_at ? $c->updated_at->toDateTimeString() : null,
@@ -114,7 +133,6 @@ public function index(Request $request)
 
     public function show(Community $community)
     {
-        // Se você tem página Inertia para show:
         $payload = [
             'id' => $community->id,
             'nome' => $community->name ?? $community->nome ?? '',
@@ -182,27 +200,27 @@ public function index(Request $request)
         //Entrar na comunidade
     public function join(Community $community)
     {
-
         $user = auth()->guard()->user();
 
         if (!$community->users()->where('user_id', $user->id)->exists()) {
-            $community->users()->attach($user->id);
+            $community->users()->attach($user->id, [
+                'last_read_at' => now()
+            ]);
         }
 
         return response()->json(['message' => 'Entrou na comunidade']);
     }
+
     //Sair da comunidade
     public function leave(Community $community)
     {
         $user = auth()->guard()->user();
 
-        // Verifica se já é membro
         if ($community->users()->where('user_id', $user->id)->exists()) {
             $community->users()->detach($user->id);
         }
 
         return back()->with('success', 'Você saiu da comunidade.');
-        //  return redirect()->route('communities.index');
     }
 
 }
