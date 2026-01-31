@@ -46,6 +46,11 @@ class DashboardController extends Controller
             }
         }
 
+        // IDs dos artigos favoritados pela usuária
+        $favoriteArticleIds = $user->favoriteArticles()
+            ->pluck('articles.id')
+            ->toArray();
+
         // Comunidades da usuária
         $communities = $user->communities()
             ->withCount('users as members_count')
@@ -79,11 +84,12 @@ class DashboardController extends Controller
         $recentlyViewedArticles = $user->recentlyViewedArticles()
             ->take(6)
             ->get()
-            ->map(function (Article $article) {
+            ->map(function (Article $article) use ($favoriteArticleIds) {
                 return [
-                    'id'      => $article->id,
-                    'title'   => $article->title,
-                    'summary' => $article->summary,
+                    'id'          => $article->id,
+                    'title'       => $article->title,
+                    'summary'     => $article->summary,
+                    'is_favorite' => in_array($article->id, $favoriteArticleIds),
                 ];
             })
             ->values();
@@ -103,11 +109,12 @@ class DashboardController extends Controller
                 ->developmentPhase
                 ->articles
                 ->take(6)
-                ->map(function ($article) {
+                ->map(function ($article) use ($favoriteArticleIds) {
                     return [
-                        'id'      => $article->id,
-                        'title'   => $article->title,
-                        'summary' => $article->summary,
+                        'id'          => $article->id,
+                        'title'       => $article->title,
+                        'summary'     => $article->summary,
+                        'is_favorite' => in_array($article->id, $favoriteArticleIds),
                     ];
                 })
                 ->values();

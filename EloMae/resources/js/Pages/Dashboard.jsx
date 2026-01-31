@@ -1,5 +1,7 @@
+import { useState } from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import NavLink from "@/Components/NavLink";
+import FavoriteStar from "@/Components/FavoriteStar";
 import { Head, Link } from "@inertiajs/react";
 
 export default function Dashboard({
@@ -10,6 +12,9 @@ export default function Dashboard({
     favoriteArticles = [],
     recentlyViewedArticles = [],
 }) {
+    // Mantém favoritos localmente para evitar desmontagem imediata
+    const [localFavorites] = useState(favoriteArticles);
+
     return (
         <AuthenticatedLayout
             header={
@@ -22,7 +27,6 @@ export default function Dashboard({
 
             <div className="py-12">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8 space-y-6">
-                    {/* Aviso de cadastro incompleto */}
                     {needsCompletion && (
                         <div className="flex items-center justify-between p-6 bg-pink-100 border border-pink-300 rounded-lg">
                             <span className="text-sm text-gray-700">
@@ -39,7 +43,7 @@ export default function Dashboard({
                         </div>
                     )}
 
-                    {/* Comunidades da usuária */}
+                    {/* Comunidades */}
                     <div className="bg-white shadow-sm sm:rounded-lg">
                         <div className="p-6">
                             <h3 className="mb-4 text-lg font-semibold text-gray-800">
@@ -81,8 +85,7 @@ export default function Dashboard({
                                             )}
 
                                             <p className="mt-2 text-xs text-gray-500">
-                                                {community.members_count}{" "}
-                                                participantes
+                                                {community.members_count} participantes
                                             </p>
                                         </li>
                                     ))}
@@ -103,20 +106,28 @@ export default function Dashboard({
                                     {recommendedArticles.map((article) => (
                                         <li
                                             key={article.id}
-                                            className="p-4 border rounded-lg hover:bg-gray-50 transition"
+                                            className="p-4 border rounded-lg hover:bg-gray-50 transition flex justify-between gap-4"
                                         >
-                                            <Link
-                                                href={`/articles/${article.id}`}
-                                                className="text-lg font-medium text-pink-600 hover:underline"
-                                            >
-                                                {article.title}
-                                            </Link>
+                                            <div>
+                                                <Link
+                                                    href={`/articles/${article.id}`}
+                                                    className="text-lg font-medium text-pink-600 hover:underline"
+                                                >
+                                                    {article.title}
+                                                </Link>
 
-                                            {article.summary && (
-                                                <p className="mt-1 text-sm text-gray-600">
-                                                    {article.summary}
-                                                </p>
-                                            )}
+                                                {article.summary && (
+                                                    <p className="mt-1 text-sm text-gray-600">
+                                                        {article.summary}
+                                                    </p>
+                                                )}
+                                            </div>
+
+                                            <FavoriteStar
+                                                articleId={article.id}
+                                                initialValue={article.is_favorite}
+                                                enableUndo
+                                            />
                                         </li>
                                     ))}
                                 </ul>
@@ -124,14 +135,14 @@ export default function Dashboard({
                         </div>
                     )}
 
-                    {/* Artigos Favoritos */}
+                    {/* Artigos favoritos */}
                     <div className="bg-white shadow-sm sm:rounded-lg">
                         <div className="p-6">
                             <h3 className="mb-4 text-lg font-semibold text-gray-800">
                                 Meus artigos favoritos
                             </h3>
 
-                            {favoriteArticles.length === 0 ? (
+                            {localFavorites.length === 0 ? (
                                 <div className="flex flex-col items-center gap-4 py-8 text-center">
                                     <p className="text-gray-500">
                                         Você ainda não favoritou nenhum artigo.
@@ -146,23 +157,31 @@ export default function Dashboard({
                                 </div>
                             ) : (
                                 <ul className="space-y-4">
-                                    {favoriteArticles.map((article) => (
+                                    {localFavorites.map((article) => (
                                         <li
                                             key={article.id}
-                                            className="p-4 border rounded-lg hover:bg-gray-50 transition"
+                                            className="p-4 border rounded-lg hover:bg-gray-50 transition flex justify-between gap-4"
                                         >
-                                            <Link
-                                                href={`/articles/${article.id}`}
-                                                className="text-lg font-medium text-pink-600 hover:underline"
-                                            >
-                                                {article.title}
-                                            </Link>
+                                            <div>
+                                                <Link
+                                                    href={`/articles/${article.id}`}
+                                                    className="text-lg font-medium text-pink-600 hover:underline"
+                                                >
+                                                    {article.title}
+                                                </Link>
 
-                                            {article.summary && (
-                                                <p className="mt-1 text-sm text-gray-600">
-                                                    {article.summary}
-                                                </p>
-                                            )}
+                                                {article.summary && (
+                                                    <p className="mt-1 text-sm text-gray-600">
+                                                        {article.summary}
+                                                    </p>
+                                                )}
+                                            </div>
+
+                                            <FavoriteStar
+                                                articleId={article.id}
+                                                initialValue={true}
+                                                enableUndo
+                                            />
                                         </li>
                                     ))}
                                 </ul>
@@ -170,7 +189,7 @@ export default function Dashboard({
                         </div>
                     </div>
 
-                    {/* Artigos visualizados recentemente */}
+                    {/* Artigos vistos recentemente */}
                     {recentlyViewedArticles.length > 0 && (
                         <div className="bg-white shadow-sm sm:rounded-lg">
                             <div className="p-6">
@@ -182,20 +201,28 @@ export default function Dashboard({
                                     {recentlyViewedArticles.map((article) => (
                                         <li
                                             key={article.id}
-                                            className="p-4 border rounded-lg hover:bg-gray-50 transition"
+                                            className="p-4 border rounded-lg hover:bg-gray-50 transition flex justify-between gap-4"
                                         >
-                                            <Link
-                                                href={`/articles/${article.id}`}
-                                                className="text-lg font-medium text-pink-600 hover:underline"
-                                            >
-                                                {article.title}
-                                            </Link>
+                                            <div>
+                                                <Link
+                                                    href={`/articles/${article.id}`}
+                                                    className="text-lg font-medium text-pink-600 hover:underline"
+                                                >
+                                                    {article.title}
+                                                </Link>
 
-                                            {article.summary && (
-                                                <p className="mt-1 text-sm text-gray-600">
-                                                    {article.summary}
-                                                </p>
-                                            )}
+                                                {article.summary && (
+                                                    <p className="mt-1 text-sm text-gray-600">
+                                                        {article.summary}
+                                                    </p>
+                                                )}
+                                            </div>
+
+                                            <FavoriteStar
+                                                articleId={article.id}
+                                                initialValue={article.is_favorite}
+                                                enableUndo
+                                            />
                                         </li>
                                     ))}
                                 </ul>
