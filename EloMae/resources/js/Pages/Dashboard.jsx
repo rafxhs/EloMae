@@ -71,14 +71,15 @@ export default function Dashboard({
                                             key={community.id}
                                             className="p-4 border rounded-lg hover:bg-gray-50 transition"
                                         >
-                                            {/* <Link
+                                            {/* Redireciona para o chat */}
+                                            <Link
                                                 href={route('communities.index', { open: community.id })}
                                                 className="text-lg font-medium text-pink-600 hover:underline"
                                             >
                                                 {community.nome}
-                                            </Link> */}
+                                            </Link>
 
-                                            <Link
+                                            {/* <Link
                                                 href={route(
                                                     "communities.show",
                                                     community.id
@@ -86,7 +87,7 @@ export default function Dashboard({
                                                 className="text-lg font-medium text-purple-600 hover:underline"
                                             >
                                                 {community.nome}
-                                            </Link>
+                                            </Link> */}
 
                                             {community.descricao && (
                                                 <p className="mt-1 text-sm text-gray-600">
