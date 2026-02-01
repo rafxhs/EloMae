@@ -71,9 +71,19 @@ export default function Dashboard({
                                             key={community.id}
                                             className="p-4 border rounded-lg hover:bg-gray-50 transition"
                                         >
-                                            <Link
-                                                href={`/communities/${community.id}`}
+                                            {/* <Link
+                                                href={route('communities.index', { open: community.id })}
                                                 className="text-lg font-medium text-pink-600 hover:underline"
+                                            >
+                                                {community.nome}
+                                            </Link> */}
+
+                                            <Link
+                                                href={route(
+                                                    "communities.show",
+                                                    community.id
+                                                )}
+                                                className="text-lg font-medium text-purple-600 hover:underline"
                                             >
                                                 {community.nome}
                                             </Link>

@@ -1,3 +1,26 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+/* =================================== */
+/* SCROLLBAR do chat e das comunidades */
+/* =================================== */
+
+.overflow-y-auto{
+    scrollbar-width: thin;
+    scrollbar-color: #BFC9D1 transparent;
+}
+.overflow-y-auto::-webkit-scrollbar {
+    width: 6px;
+}
+.overflow-y-auto::-webkit-scrollbar-track {
+    background: transparent;
+}
+.overflow-y-auto::-webkit-scrollbar-thumb {
+    background-color: #BFC9D1;
+    border-radius: 999px;
+}
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background-color: #9AA5B1;
+}
