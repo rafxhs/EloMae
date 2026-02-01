@@ -9,6 +9,7 @@ export default function Chat({ community }) {
     const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState("");
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const [isSending, setIsSending] = useState(false);
     const messagesEndRef = useRef(null);
 
     const scrollToBottom = () => {
@@ -36,9 +37,9 @@ export default function Chat({ community }) {
     const fetchMessages = async (communityId) => {
         try {
             const res = await fetch(`/messages?community_id=${communityId}`, {
+                credentials: "same-origin",
                 headers: {
                     Accept: "application/json",
-                    "X-CSRF-TOKEN": getCsrfToken(),
                 },
             });
 
@@ -53,11 +54,14 @@ export default function Chat({ community }) {
 
     const sendMessage = async (e) => {
         e.preventDefault();
-        if (!message.trim()) return;
+        if (!message.trim() || isSending) return;
+
+        setIsSending(true);
 
         try {
             const res = await fetch("/messages", {
                 method: "POST",
+                credentials: "same-origin",
                 headers: {
                     "Content-Type": "application/json",
                     Accept: "application/json",
@@ -69,13 +73,18 @@ export default function Chat({ community }) {
                 }),
             });
 
-            if (!res.ok) return;
+            if (!res.ok) {
+                setIsSending(false);
+                return;
+            }
 
             const saved = await res.json();
             setMessages((prev) => [...prev, saved]);
             setMessage("");
         } catch (error) {
             console.error("Erro ao enviar mensagem:", error);
+        } finally {
+            setIsSending(false);
         }
     };
 
@@ -193,7 +202,7 @@ export default function Chat({ community }) {
                     placeholder="Digite sua mensagem"
                 />
 
-                <button type="submit">
+                <button type="submit" disabled={isSending}>
                     <HiPaperAirplane className="h-6 w-6 rotate-45" />
                 </button>
             </form>
