@@ -98,8 +98,8 @@ class DashboardController extends Controller
         $recommendedArticles = [];
 
         $lastPhaseNotification = DependentPhaseNotification::whereHas('dependent', function ($query) use ($user) {
-            $query->where('user_id', $user->id);
-        })
+                $query->where('user_id', $user->id);
+            })
             ->with('developmentPhase.articles')
             ->latest('notified_at')
             ->first();

@@ -95,7 +95,8 @@ export default function Dashboard({
                                             )}
 
                                             <p className="mt-2 text-xs text-gray-500">
-                                                {community.members_count} participantes
+                                                {community.members_count}{" "}
+                                                participantes
                                             </p>
                                         </li>
                                     ))}
@@ -111,6 +112,10 @@ export default function Dashboard({
                                 <h3 className="mb-4 text-lg font-semibold text-gray-800">
                                     Artigos recomendados para você
                                 </h3>
+                                <p className="mb-4 text-sm text-gray-500">
+                                    Recomendações baseadas na fase de
+                                    desenvolvimento atual:
+                                </p>
 
                                 <ul className="space-y-4">
                                     {recommendedArticles.map((article) => (
@@ -135,7 +140,9 @@ export default function Dashboard({
 
                                             <FavoriteStar
                                                 articleId={article.id}
-                                                initialValue={article.is_favorite}
+                                                initialValue={
+                                                    article.is_favorite
+                                                }
                                                 enableUndo
                                             />
                                         </li>
@@ -230,7 +237,9 @@ export default function Dashboard({
 
                                             <FavoriteStar
                                                 articleId={article.id}
-                                                initialValue={article.is_favorite}
+                                                initialValue={
+                                                    article.is_favorite
+                                                }
                                                 enableUndo
                                             />
                                         </li>

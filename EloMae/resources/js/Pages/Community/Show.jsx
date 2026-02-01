@@ -95,7 +95,7 @@ export default function Show() {
                     </button>
                 </div>
 
-                {user && user.is_admin && (
+                {user && user.is_admin ? (
                     <div className="flex gap-2 justify-center mt-6">
                         <Link
                             href={route('communities.edit', community.id)}
@@ -117,7 +117,7 @@ export default function Show() {
                             Excluir
                         </Link>
                     </div>
-                )}
+                ): null}
             </div>
 
             {/* Modal de confirmação */}
