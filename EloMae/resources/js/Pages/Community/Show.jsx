@@ -109,12 +109,12 @@ export default function Show() {
                             as="button"
                             className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 whitespace-nowrap"
                             onClick={(e) => {
-                                if (!confirm('Tem certeza que deseja deletar esta comunidade?')) {
+                                if (!confirm('Tem certeza que deseja excluir esta comunidade?')) {
                                     e.preventDefault();
                                 }
                             }}
                         >
-                            Deletar
+                            Excluir
                         </Link>
                     </div>
                 )}

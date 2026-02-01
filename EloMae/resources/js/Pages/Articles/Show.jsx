@@ -192,14 +192,14 @@ export default function Show({
                             onClick={(e) => {
                                 if (
                                     !confirm(
-                                        "Tem certeza que deseja deletar este artigo?"
+                                        "Tem certeza que deseja excluir este artigo?"
                                     )
                                 ) {
                                     e.preventDefault();
                                 }
                             }}
                         >
-                            Deletar
+                            Excluir
                         </Link>
                     </div>
                 )}
