@@ -6,10 +6,12 @@ import JoinCommunityModal from "@/Components/Community/JoinCommunityModal";
 import axios from "axios";
 import LinkButton from "@/Components/LinkButton";
 import Chat from "@/Components/Community/Chat";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+
 
 export default function Index() {
-    const { auth, communities: initialCommunities } = usePage().props;
+    const { props, url } = usePage();
+    const { auth, communities: initialCommunities } = props;
     const user = auth?.user ?? null;
 
     const [communities, setCommunities] = useState(initialCommunities);
@@ -19,7 +21,9 @@ export default function Index() {
     const [showJoinModal, setShowJoinModal] = useState(false);
     const [communityToJoin, setCommunityToJoin] = useState(null);
 
-    const currentUserId = usePage().props.auth.user.id;
+    const query = new URLSearchParams(url.split("?")[1]);
+    const openCommunityId = query.get("open");
+    const hasOpenedFromUrl = useRef(false);
 
     const filteredCommunities = useMemo(() => {
         let list = communities;
@@ -62,11 +66,43 @@ export default function Index() {
                 is_member: true,
                 unread_count: 0,
             });
-            // fetchMessages(communityToJoin.id);
         } catch (error) {
             console.error("Erro ao entrar na comunidade:", error);
         }
     };
+
+    useEffect(() => {
+        if (hasOpenedFromUrl.current) return;
+        if (!openCommunityId || !communities.length) return;
+
+        const community = communities.find(
+            (c) => c.id === Number(openCommunityId)
+        );
+
+        if (!community) return;
+
+        hasOpenedFromUrl.current = true;
+
+        if (!community.is_member) {
+            setCommunityToJoin(community);
+            setShowJoinModal(true);
+            return;
+        }
+
+        setSelectedCommunity({
+            ...community,
+            unread_count: 0,
+        });
+
+        setCommunities((prev) =>
+            prev.map((c) =>
+                c.id === community.id
+                    ? { ...c, unread_count: 0 }
+                    : c
+            )
+        );
+    }, [openCommunityId, communities]);
+
 
     return (
         <AuthenticatedLayout
@@ -136,7 +172,6 @@ export default function Index() {
                                                         : c
                                                 )
                                             );
-                                            // fetchMessages(community.id);
                                         }
                                     }}
                                     className={`flex items-center mx-3 px-2 py-3 rounded-lg cursor-pointer
