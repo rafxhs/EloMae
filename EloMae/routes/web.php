@@ -13,6 +13,7 @@ use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\ArticleFavoriteController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\FaqController;
 
 /*
 |--------------------------------------------------------------------------
@@ -137,6 +138,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/notifications/data', [NotificationController::class, 'index']);
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
 });
+
+
+Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');
+
 
 /*
 |--------------------------------------------------------------------------

@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
         DevelopmentPhaseSeeder::class,
         ArticleSeeder::class,
         InstitutionSeeder::class,
+        FaqSeeder::class,
     ]);
     }
 }
