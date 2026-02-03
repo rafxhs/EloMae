@@ -175,7 +175,7 @@ export default function Show({
                     </div>
                 </div>
 
-                {isAdmin && (
+                {user.is_admin ? (
                     <div className="flex gap-2 justify-center mt-6">
                         <Link
                             href={route("articles.edit", article.id)}
@@ -202,7 +202,7 @@ export default function Show({
                             Deletar
                         </Link>
                     </div>
-                )}
+                ): null}
             </div>
         </AuthenticatedLayout>
     );
