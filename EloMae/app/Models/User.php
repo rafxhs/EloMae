@@ -6,6 +6,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Article;
+use App\Models\ArticleView;
 
 class User extends Authenticatable
 {
@@ -66,5 +68,29 @@ class User extends Authenticatable
     public function communities()
     {
         return $this->belongsToMany(Community::class, 'community_user');
+    }
+
+    public function favoriteArticles()
+    {
+        return $this->belongsToMany(
+            Article::class,
+            'article_favorites',
+            'user_id',
+            'article_id'
+        )->withTimestamps();
+    }
+    public function recentlyReadArticles()
+    {
+        return Article::query()
+            ->select('articles.*')
+            ->join('article_views', 'articles.id', '=', 'article_views.article_id')
+            ->where('article_views.user_id', $this->id)
+            ->orderByDesc('article_views.read_at') // ou article_views.created_at
+            ->limit(5);
+    }
+
+    public function articleViews()
+    {
+        return $this->hasMany(ArticleView::class);
     }
 }

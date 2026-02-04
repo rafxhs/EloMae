@@ -23,6 +23,7 @@
         "vite": "^7.2.2"
     },
     "dependencies": {
+        "@heroicons/react": "^2.2.0",
         "@inertiajs/inertia": "^0.11.1",
         "@tinymce/tinymce-react": "^6.3.0",
         "@vitejs/plugin-react": "^5.1.0",

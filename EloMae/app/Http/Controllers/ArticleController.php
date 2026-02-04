@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Category;
 use App\Models\ArticleVote;
+use App\Models\ArticleView;
 
 class ArticleController extends Controller
 {
@@ -71,6 +72,17 @@ class ArticleController extends Controller
     public function show(Article $article)
     {
         $user = Auth::user();
+
+        if ($user) {
+            // Registrar visualização do artigo
+            ArticleView::updateOrCreate(
+                [
+                    'article_id' => $article->id,
+                    'user_id' => $user->id,
+                ],
+                ['read_at' => now()]
+            );
+        }
 
         $article->loadCount([
             'votes as helpful_yes' => fn($q) => $q->where('value', 'yes'),

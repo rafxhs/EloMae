@@ -42,4 +42,9 @@ class Article extends Model
         return $this->hasMany(ArticleVote::class);
     }
 
+    public function views()
+    {
+        return $this->hasMany(ArticleView::class);
+    }
+
 }
