@@ -1,18 +1,19 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
 class ArticleView extends Model
 {
-    protected $fillable = [
+     protected $fillable = [
         'user_id',
         'article_id',
-        'viewed_at',
+        'read_at',
     ];
 
     protected $casts = [
-        'viewed_at' => 'datetime',
+        'read_at' => 'datetime',
     ];
 
     public function user()

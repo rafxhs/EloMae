@@ -47,5 +47,9 @@ class Article extends Model
     return $this->belongsTo(DevelopmentPhase::class);
 }
 
+    public function views()
+    {
+        return $this->hasMany(ArticleView::class);
+    }
 
 }

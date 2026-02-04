@@ -1,6 +1,6 @@
 import LinkButton from "@/Components/LinkButton";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Link, usePage, router } from "@inertiajs/react";
+import { Link, usePage, router, Head} from "@inertiajs/react";
 import { useState } from "react";
 import { HiPlus, HiSearch } from "react-icons/hi";
 
@@ -30,6 +30,8 @@ export default function Index() {
                         <HiPlus className="h-6 w-6" />
                     </LinkButton>
                 ) : null}
+
+            <Head title="Artigos" />
 
                 <div className="flex items-center justify-between gap-10 mb-6 mt-6 border-b pb-4 shadow-lg">
                     <div className="max-w-md">

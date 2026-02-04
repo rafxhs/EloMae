@@ -81,11 +81,13 @@ export default function FavoriteStar({
             </button>
 
             {showUndo && (
-                <div className="fixed bottom-6 right-6 bg-gray-900 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-4 z-50">
-                    <span>Artigo removido dos favoritos</span>
+                <div className="fixed bottom-6 right-6 p-6 bg-primary-100 rounded-lg border border-primary-400 shadow-lg flex items-center justify-between gap-4 z-50">
+                    <span className="font-medium text-md text-neutral-800">
+                        Artigo removido dos favoritos
+                    </span>
                     <button
                         onClick={undo}
-                        className="font-semibold underline hover:text-yellow-400"
+                        className="px-4 h-[45px] text-white bg-primary-400 rounded-lg hover:bg-primary-300"
                     >
                         Desfazer
                     </button>

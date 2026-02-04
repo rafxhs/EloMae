@@ -78,6 +78,7 @@ class ArticleController extends Controller
     /*
      Registrar visualização do artigo
     */
+
     if ($user) {
         ArticleView::updateOrCreate(
             [
@@ -85,7 +86,7 @@ class ArticleController extends Controller
                 'article_id' => $article->id,
             ],
             [
-                'viewed_at' => now(),
+                'read_at' => now(),
             ]
         );
     }
@@ -190,3 +191,4 @@ class ArticleController extends Controller
     }
 
 }
+

@@ -8,7 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\ArticleFavorite;
 use App\Models\ArticleView;
-
+use App\Models\Article;
 
 class User extends Authenticatable
 {
@@ -42,19 +42,16 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * The attributes that should be cast.
      *
-     * @return array<string, string>
+     * @var array<string, string>
      */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'government_beneficiary' => 'boolean',
-            'birth_date' => 'date',
-        ];
-    }
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+        'government_beneficiary' => 'boolean',
+        'birth_date' => 'date',
+    ];
 
     public function address()
     {
@@ -78,13 +75,6 @@ class User extends Authenticatable
         return $this->hasMany(ArticleFavorite::class);
     }
 
-    public function favoriteArticles()
-    {
-        return $this->belongsToMany(
-            Article::class,
-            'article_favorites'
-        )->withTimestamps();
-    }
 
     public function articleViews()
     {
@@ -97,7 +87,27 @@ class User extends Authenticatable
             Article::class,
             'article_views'
         )
-            ->withPivot('viewed_at')
-            ->orderByDesc('article_views.viewed_at');
+            ->withPivot('read_at')
+            ->orderByDesc('article_views.read_at');
     }
+
+    public function favoriteArticles()
+    {
+        return $this->belongsToMany(
+            Article::class,
+            'article_favorites',
+            'user_id',
+            'article_id'
+        )->withTimestamps();
+    }
+    public function recentlyReadArticles()
+    {
+        return Article::query()
+            ->select('articles.*')
+            ->join('article_views', 'articles.id', '=', 'article_views.article_id')
+            ->where('article_views.user_id', $this->id)
+            ->orderByDesc('article_views.read_at')
+            ->limit(5);
+    }
+
 }

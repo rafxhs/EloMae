@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Article;
+use App\Models\ArticleView;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use App\Models\Community;
 use App\Models\DependentPhaseNotification;
-use App\Models\Article;
 
 class DashboardController extends Controller
 {
@@ -98,8 +100,8 @@ class DashboardController extends Controller
         $recommendedArticles = [];
 
         $lastPhaseNotification = DependentPhaseNotification::whereHas('dependent', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
-            })
+            $query->where('user_id', $user->id);
+        })
             ->with('developmentPhase.articles')
             ->latest('notified_at')
             ->first();
@@ -120,6 +122,11 @@ class DashboardController extends Controller
                 ->values();
         }
 
+        $popularArticles = Article::withCount('views')
+            ->orderByDesc('views_count')
+            ->limit(5)
+            ->get(['id', 'title']);
+
         // Renderização do dashboard
         return Inertia::render('Dashboard', [
             'auth' => [
@@ -130,6 +137,7 @@ class DashboardController extends Controller
             'favoriteArticles'       => $favoriteArticles,
             'recentlyViewedArticles' => $recentlyViewedArticles,
             'recommendedArticles'    => $recommendedArticles,
+            'popularArticles'        => $popularArticles,
         ]);
     }
 }

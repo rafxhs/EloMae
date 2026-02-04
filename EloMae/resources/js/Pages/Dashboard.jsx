@@ -3,6 +3,13 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import NavLink from "@/Components/NavLink";
 import FavoriteStar from "@/Components/FavoriteStar";
 import { Head, Link } from "@inertiajs/react";
+import {
+    UsersIcon,
+    StarIcon,
+    ClockIcon,
+    FireIcon,
+    BookOpenIcon,
+} from "@heroicons/react/24/outline";
 
 export default function Dashboard({
     auth,
@@ -10,247 +17,292 @@ export default function Dashboard({
     communities = [],
     recommendedArticles = [],
     favoriteArticles = [],
+    popularArticles = [],
     recentlyViewedArticles = [],
 }) {
-    // Mantém favoritos localmente para evitar desmontagem imediata
     const [localFavorites] = useState(favoriteArticles);
 
     return (
         <AuthenticatedLayout
             header={
                 <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                    Dashboard
+                    EloMae
                 </h2>
             }
         >
-            <Head title="Dashboard" />
+            <Head title="Home" />
 
-            <div className="py-12">
-                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8 space-y-6">
-                    {needsCompletion && (
-                        <div className="flex items-center justify-between p-6 bg-pink-100 border border-pink-300 rounded-lg">
-                            <span className="text-sm text-gray-700">
-                                Complete seu cadastro para aproveitar melhor a
-                                plataforma.
-                            </span>
+            <main className="py-10">
+                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
+                    <section className="mb-10">
+                        {needsCompletion && (
+                            <div className="flex items-center justify-between p-6 bg-primary-100 rounded-lg border border-primary-400">
+                                <span className="font-medium text-md text-neutral-800">
+                                    Complete seu cadastro para aproveitar melhor
+                                    a plataforma!
+                                </span>
+                                <NavLink
+                                    href="/profile"
+                                    className="w-full sm:h-[45px] px-4 items-center text-white bg-primary-400 rounded-lg hover:bg-primary-300 hover:text-white"
+                                >
+                                    Completar Cadastro
+                                </NavLink>
+                            </div>
+                        )}
+                    </section>
 
-                            <NavLink
-                                href="/profile"
-                                className="px-6 py-3 text-white bg-pink-500 rounded-lg hover:bg-pink-700 transition"
-                            >
-                                Completar cadastro
-                            </NavLink>
-                        </div>
-                    )}
-
-                    {/* Comunidades */}
-                    <div className="bg-white shadow-sm sm:rounded-lg">
-                        <div className="p-6">
-                            <h3 className="mb-4 text-lg font-semibold text-gray-800">
+                    <section className="space-y-4">
+                        <div className="flex flex-row items-center gap-4">
+                            <div className="w-14 h-14 flex items-center justify-center rounded-full bg-primary-100">
+                                <UsersIcon className="w-7 h-7 text-primary-600" />
+                            </div>
+                            <h3 className="text-xl font-semibold text-neutral-900">
                                 Minhas comunidades
                             </h3>
+                        </div>
 
-                            {communities.length === 0 ? (
-                                <div className="flex flex-col items-center gap-4 py-8 text-center">
-                                    <p className="text-gray-500">
-                                        Você ainda não participa de nenhuma
-                                        comunidade.
-                                    </p>
-
-                                    <Link
-                                        href={route("communities.index")}
-                                        className="inline-flex items-center px-6 py-3 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition"
+                        {communities.length === 0 ? (
+                            <p className="text-neutral-600">
+                                Você ainda não participa de nenhuma comunidade.
+                            </p>
+                        ) : (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                                {communities.slice(0, 3).map((community) => (
+                                    <div
+                                        key={community.id}
+                                        className="p-6 bg-neutral-200 rounded-xl shadow-sm space-y-2"
                                     >
-                                        Explorar comunidades
-                                    </Link>
-                                </div>
-                            ) : (
-                                <ul className="space-y-4">
-                                    {communities.map((community) => (
-                                        <li
-                                            key={community.id}
-                                            className="p-4 border rounded-lg hover:bg-gray-50 transition"
+                                        <Link
+                                            href={route("communities.index", {
+                                                open: community.id,
+                                            })}
+                                            className="font-semibold text-primary-700 hover:underline"
                                         >
-                                            {/* Redireciona para o chat */}
-                                            <Link
-                                                href={route('communities.index', { open: community.id })}
-                                                className="text-lg font-medium text-pink-600 hover:underline"
-                                            >
-                                                {community.nome}
-                                            </Link>
-
-                                            {/* <Link
-                                                href={route(
-                                                    "communities.show",
-                                                    community.id
-                                                )}
-                                                className="text-lg font-medium text-purple-600 hover:underline"
-                                            >
-                                                {community.nome}
-                                            </Link> */}
-
-                                            {community.descricao && (
-                                                <p className="mt-1 text-sm text-gray-600">
-                                                    {community.descricao}
-                                                </p>
-                                            )}
-
-                                            <p className="mt-2 text-xs text-gray-500">
-                                                {community.members_count}{" "}
-                                                participantes
+                                            {community.name ?? community.nome}
+                                        </Link>
+                                        {(community.description ||
+                                            community.descricao) && (
+                                            <p className="text-sm text-neutral-700">
+                                                {community.description ??
+                                                    community.descricao}
                                             </p>
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-                        </div>
-                    </div>
+                                        )}
+                                    </div>
+                                ))}
 
-                    {/* Artigos recomendados */}
-                    {recommendedArticles.length > 0 && (
-                        <div className="bg-white shadow-sm sm:rounded-lg">
-                            <div className="p-6">
-                                <h3 className="mb-4 text-lg font-semibold text-gray-800">
-                                    Artigos recomendados para você
-                                </h3>
-                                <p className="mb-4 text-sm text-gray-500">
-                                    Recomendações baseadas na fase de
-                                    desenvolvimento atual:
-                                </p>
-
-                                <ul className="space-y-4">
-                                    {recommendedArticles.map((article) => (
-                                        <li
-                                            key={article.id}
-                                            className="p-4 border rounded-lg hover:bg-gray-50 transition flex justify-between gap-4"
+                                {communities.length > 3 && (
+                                    <div className="flex justify-end pt-4 col-span-full">
+                                        <Link
+                                            href={route("communities.index")}
+                                            className="text-neutral-700 font-medium hover:underline"
                                         >
-                                            <div>
-                                                <Link
-                                                    href={`/articles/${article.id}`}
-                                                    className="text-lg font-medium text-pink-600 hover:underline"
-                                                >
-                                                    {article.title}
-                                                </Link>
-
-                                                {article.summary && (
-                                                    <p className="mt-1 text-sm text-gray-600">
-                                                        {article.summary}
-                                                    </p>
-                                                )}
-                                            </div>
-
-                                            <FavoriteStar
-                                                articleId={article.id}
-                                                initialValue={
-                                                    article.is_favorite
-                                                }
-                                                enableUndo
-                                            />
-                                        </li>
-                                    ))}
-                                </ul>
+                                            Ver mais
+                                        </Link>
+                                    </div>
+                                )}
                             </div>
-                        </div>
-                    )}
+                        )}
+                    </section>
 
-                    {/* Artigos favoritos */}
-                    <div className="bg-white shadow-sm sm:rounded-lg">
-                        <div className="p-6">
-                            <h3 className="mb-4 text-lg font-semibold text-gray-800">
-                                Meus artigos favoritos
+                    <section className="mt-20 space-y-10">
+                        <div className="flex flex-row items-center gap-4">
+                            <div className="w-14 h-14 flex items-center justify-center rounded-full bg-primary-100">
+                                <BookOpenIcon className="w-7 h-7 text-primary-600" />
+                            </div>
+                            <h3 className="text-2xl font-medium text-neutral-900 py-8">
+                                Artigos para você
                             </h3>
-
-                            {localFavorites.length === 0 ? (
-                                <div className="flex flex-col items-center gap-4 py-8 text-center">
-                                    <p className="text-gray-500">
-                                        Você ainda não favoritou nenhum artigo.
-                                    </p>
-
-                                    <Link
-                                        href={route("articles.index")}
-                                        className="inline-flex items-center px-6 py-3 text-sm font-medium text-white bg-pink-600 rounded-lg hover:bg-pink-700 transition"
-                                    >
-                                        Explorar artigos
-                                    </Link>
-                                </div>
-                            ) : (
-                                <ul className="space-y-4">
-                                    {localFavorites.map((article) => (
-                                        <li
-                                            key={article.id}
-                                            className="p-4 border rounded-lg hover:bg-gray-50 transition flex justify-between gap-4"
-                                        >
-                                            <div>
-                                                <Link
-                                                    href={`/articles/${article.id}`}
-                                                    className="text-lg font-medium text-pink-600 hover:underline"
-                                                >
-                                                    {article.title}
-                                                </Link>
-
-                                                {article.summary && (
-                                                    <p className="mt-1 text-sm text-gray-600">
-                                                        {article.summary}
-                                                    </p>
-                                                )}
-                                            </div>
-
-                                            <FavoriteStar
-                                                articleId={article.id}
-                                                initialValue={true}
-                                                enableUndo
-                                            />
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
                         </div>
-                    </div>
 
-                    {/* Artigos vistos recentemente */}
-                    {recentlyViewedArticles.length > 0 && (
-                        <div className="bg-white shadow-sm sm:rounded-lg">
-                            <div className="p-6">
-                                <h3 className="mb-4 text-lg font-semibold text-gray-800">
-                                    Artigos vistos recentemente
-                                </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
+                            {recommendedArticles.length > 0 && (
+                                <div className="bg-neutral-200 p-6 rounded-xl shadow-sm space-y-4">
+                                    <div className="flex items-start gap-2">
+                                        <BookOpenIcon className="w-8 h-8 text-primary-600" />
+                                        <div>
+                                            <h4 className="font-semibold text-primary-700">
+                                                Recomendados
+                                            </h4>
+                                            <p className="mb-4 text-sm text-gray-500">
+                                                Sugestões personalizadas
+                                                conforme o estágio atual de
+                                                desenvolvimento da sua criança
+                                            </p>
+                                        </div>
+                                    </div>
 
-                                <ul className="space-y-4">
-                                    {recentlyViewedArticles.map((article) => (
-                                        <li
-                                            key={article.id}
-                                            className="p-4 border rounded-lg hover:bg-gray-50 transition flex justify-between gap-4"
-                                        >
-                                            <div>
-                                                <Link
-                                                    href={`/articles/${article.id}`}
-                                                    className="text-lg font-medium text-pink-600 hover:underline"
+                                    <div className="divide-y divide-neutral-300 space-y-4">
+                                        {recommendedArticles
+                                            .slice(0, 4)
+                                            .map((article) => (
+                                                <div
+                                                    key={article.id}
+                                                    className="flex justify-between gap-4 p-2"
                                                 >
-                                                    {article.title}
-                                                </Link>
+                                                    <Link
+                                                        href={route(
+                                                            "articles.show",
+                                                            article.id
+                                                        )}
+                                                        className="block text-sm text-neutral-700 hover:text-primary-600"
+                                                    >
+                                                        <h5 className="font-medium text-neutral-800">
+                                                            {article.title}
+                                                        </h5>
+                                                        <p className="text-xs text-neutral-600">
+                                                            {article.summary}
+                                                        </p>
+                                                    </Link>
 
-                                                {article.summary && (
-                                                    <p className="mt-1 text-sm text-gray-600">
+                                                    <FavoriteStar
+                                                        articleId={article.id}
+                                                        initialValue={
+                                                            article.is_favorite
+                                                        }
+                                                        enableUndo
+                                                    />
+                                                </div>
+                                            ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="bg-neutral-200 p-6 rounded-xl shadow-sm space-y-4">
+                                <div className="flex items-center gap-2">
+                                    <FireIcon className="w-8 h-8 text-orange-700" />
+                                    <h3 className="text-xl font-semibold text-neutral-900">
+                                        Artigos mais populares
+                                    </h3>
+                                </div>
+
+                                {popularArticles.length === 0 ? (
+                                    <p className="text-neutral-600">
+                                        Nenhum artigo popular ainda.
+                                    </p>
+                                ) : (
+                                    <div className="divide-y divide-neutral-300 space-y-4">
+                                        {popularArticles
+                                            .slice(0, 4)
+                                            .map((article) => (
+                                                <Link
+                                                    key={article.id}
+                                                    href={route(
+                                                        "articles.show",
+                                                        article.id
+                                                    )}
+                                                    className="block text-neutral-700 hover:text-primary-600 p-2"
+                                                >
+                                                    <h5 className="font-medium text-neutral-800">
+                                                        {article.title}
+                                                    </h5>
+                                                    <p className="text-xs text-neutral-600">
                                                         {article.summary}
                                                     </p>
-                                                )}
-                                            </div>
+                                                </Link>
+                                            ))}
+                                    </div>
+                                )}
+                            </div>
 
-                                            <FavoriteStar
-                                                articleId={article.id}
-                                                initialValue={
-                                                    article.is_favorite
-                                                }
-                                                enableUndo
-                                            />
-                                        </li>
-                                    ))}
-                                </ul>
+                            <div className="bg-neutral-200 p-6 rounded-xl shadow-sm space-y-4">
+                                <div className="flex items-center gap-2">
+                                    <StarIcon className="w-8 h-8 text-yellow-500" />
+                                    <h4 className="font-semibold text-primary-700">
+                                        Favoritos
+                                    </h4>
+                                </div>
+
+                                {localFavorites.length === 0 ? (
+                                    <p className="text-sm text-neutral-600">
+                                        Você ainda não favoritou artigos.
+                                    </p>
+                                ) : (
+                                    <div className="divide-y divide-neutral-300 space-y-4">
+                                        {localFavorites
+                                            .slice(0, 4)
+                                            .map((article) => (
+                                                <div
+                                                    key={article.id}
+                                                    className="flex justify-between gap-4 p-2"
+                                                >
+                                                    <Link
+                                                        href={route(
+                                                            "articles.show",
+                                                            article.id
+                                                        )}
+                                                        className="block text-sm text-neutral-700 hover:text-primary-600"
+                                                    >
+                                                        <h5 className="font-medium text-neutral-800">
+                                                            {article.title}
+                                                        </h5>
+                                                        <p className="text-xs text-neutral-600">
+                                                            {article.summary}
+                                                        </p>
+                                                    </Link>
+
+                                                    <FavoriteStar
+                                                        articleId={article.id}
+                                                        initialValue={true}
+                                                        enableUndo
+                                                    />
+                                                </div>
+                                            ))}
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="bg-neutral-200 p-6 rounded-xl shadow-sm space-y-4">
+                                <div className="flex items-center gap-2">
+                                    <ClockIcon className="w-8 h-8 text-primary-600" />
+                                    <h4 className="font-semibold text-primary-700">
+                                        Vistos recentemente
+                                    </h4>
+                                </div>
+
+                                {recentlyViewedArticles.length === 0 ? (
+                                    <p className="text-sm text-neutral-600">
+                                        Você ainda não leu artigos.
+                                    </p>
+                                ) : (
+                                    <div className="divide-y divide-neutral-300 space-y-4">
+                                        {recentlyViewedArticles
+                                            .slice(0, 4)
+                                            .map((article) => (
+                                                <div
+                                                    key={article.id}
+                                                    className="flex justify-between gap-4 p-2"
+                                                >
+                                                    <Link
+                                                        href={route(
+                                                            "articles.show",
+                                                            article.id
+                                                        )}
+                                                        className="block text-sm text-neutral-700 hover:text-primary-600"
+                                                    >
+                                                        <h5 className="font-medium text-neutral-800">
+                                                            {article.title}
+                                                        </h5>
+                                                        <p className="text-xs text-neutral-600">
+                                                            {article.summary}
+                                                        </p>
+                                                    </Link>
+
+                                                    <FavoriteStar
+                                                        articleId={article.id}
+                                                        initialValue={
+                                                            article.is_favorite
+                                                        }
+                                                        enableUndo
+                                                    />
+                                                </div>
+                                            ))}
+                                    </div>
+                                )}
                             </div>
                         </div>
-                    )}
+                    </section>
                 </div>
-            </div>
+            </main>
         </AuthenticatedLayout>
     );
 }

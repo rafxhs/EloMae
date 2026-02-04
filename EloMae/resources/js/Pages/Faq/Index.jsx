@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { router, usePage } from "@inertiajs/react";
+import { router, usePage, Head } from "@inertiajs/react";
 import GuestLayout from "@/Layouts/GuestLayout";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { HiSearch } from "react-icons/hi";
@@ -22,6 +22,7 @@ export default function Index({ faqs, filters }) {
 
     return (
         <Layout user={auth.user}>
+            <Head title="Perguntas Frequentes" />
             <div className="max-w-4xl mx-auto py-10 relative">
                 <div className="flex items-center justify-between gap-10 mb-6 mt-6 border-b pb-4 shadow-lg">
                     <div className="max-w-md">
@@ -29,8 +30,8 @@ export default function Index({ faqs, filters }) {
                             Perguntas Frequentes
                         </h1>
                         <p className="mt-2 text-gray-600">
-                            Encontre respostas sobre a plataforma, funcionalidades
-                            e uso geral do Elo Mãe.
+                            Encontre respostas sobre a plataforma,
+                            funcionalidades e uso geral do Elo Mãe.
                         </p>
                     </div>
 
@@ -69,7 +70,9 @@ export default function Index({ faqs, filters }) {
                             className="py-2 pr-0 bg-gray-200 text-gray-700 text-sm rounded-lg border-gray-300 focus:outline-none focus:ring-0"
                         >
                             <option value="">Filtrar por categorias</option>
-                            <option value="plataforma">Sobre a plataforma</option>
+                            <option value="plataforma">
+                                Sobre a plataforma
+                            </option>
                             <option value="artigos">Artigos</option>
                             <option value="comunidades">Comunidades</option>
                             <option value="mapa">Mapa</option>

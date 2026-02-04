@@ -14,8 +14,8 @@ export default function AuthenticatedLayout({ header, children }) {
         useState(false);
 
     return (
-        <div className="min-h-screen bg-gray-100">
-            <nav className="border-b border-gray-100 bg-white">
+        <div className="min-h-screen">
+            <nav className="bg-white">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="flex h-16 justify-between">
                         {/* LEFT SIDE */}
@@ -31,7 +31,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                     href={route("dashboard")}
                                     active={route().current("dashboard")}
                                 >
-                                    Dashboard
+                                    Home
                                 </NavLink>
                             </div>
 
@@ -61,6 +61,15 @@ export default function AuthenticatedLayout({ header, children }) {
                                     active={route().current("mapa")}
                                 >
                                     Mapa
+                                </NavLink>
+                            </div>
+
+                            <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                <NavLink
+                                    href={route("faq.index")}
+                                    active={route().current("faq.index")}
+                                >
+                                    FAQ
                                 </NavLink>
                             </div>
                         </div>
@@ -172,7 +181,7 @@ export default function AuthenticatedLayout({ header, children }) {
                             href={route("dashboard")}
                             active={route().current("dashboard")}
                         >
-                            Dashboard
+                            Home
                         </ResponsiveNavLink>
 
                         <ResponsiveNavLink
