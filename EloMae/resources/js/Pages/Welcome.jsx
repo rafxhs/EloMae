@@ -61,11 +61,11 @@ export default function Welcome({ auth, laravelVersion, phpVersion, articlePrevi
 
                                     <div className='z-10 w-1/2 px-12 space-y-5'>
                                         <h1 className='text-3xl font-semibold text-primary-700'>
-                                            Informação, apoio e acolhimento para mães solo
+                                            Informação, apoio e acolhimento para mães
                                         </h1>
 
                                         <p className='text text-justify font-medium leading-relaxed'>
-                                            O EloMãe é uma plataforma criada para apoiar mães solo
+                                            O EloMãe é uma plataforma criada para apoiar mães 
                                             com informações confiáveis, suporte emocional e acesso
                                             a redes de apoio perto de você.
                                         </p>
