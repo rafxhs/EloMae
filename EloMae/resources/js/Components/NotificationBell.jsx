@@ -1,0 +1,212 @@
+import { useEffect, useState, useRef } from "react";
+import { HiBell, HiCalculator } from "react-icons/hi";
+
+export default function NotificationBell() {
+    const [hasUnread, setHasUnread] = useState(false);
+    const [notifications, setNotifications] = useState([]);
+    const [open, setOpen] = useState(false);
+    const bellRef = useRef(null);
+
+    /**
+     * Fecha o dropdown ao clicar fora
+     */
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (bellRef.current && !bellRef.current.contains(event.target)) {
+                setOpen(false);
+            }
+        }
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () =>
+            document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    /**
+     * Busca quantidade de notificações não lidas
+     */
+    const fetchUnreadCount = async () => {
+        try {
+            const response = await fetch("/notifications/unread-count", {
+                credentials: "include",
+                headers: {
+                    Accept: "application/json",
+                    "X-Requested-With": "XMLHttpRequest",
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setHasUnread(data.unread > 0);
+            }
+        } catch (error) {
+            console.error("Erro ao buscar contador de notificações:", error);
+        }
+    };
+
+    /**
+     * Busca notificações completas
+     */
+    const fetchNotifications = async () => {
+        try {
+            const response = await fetch("/notifications/data", {
+                credentials: "include",
+                headers: {
+                    Accept: "application/json",
+                    "X-Requested-With": "XMLHttpRequest",
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setNotifications(data);
+            }
+        } catch (error) {
+            console.error("Erro ao buscar notificações:", error);
+        }
+    };
+
+    /**
+     * Abre / fecha dropdown
+     */
+    const toggleDropdown = async () => {
+        const next = !open;
+        setOpen(next);
+
+        if (next) {
+            await fetchNotifications();
+        }
+    };
+
+    /**
+     * Marca notificação como lida
+     */
+    const markAsRead = async (id) => {
+        try {
+            await fetch(`/notifications/${id}/read`, {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    Accept: "application/json",
+                    "X-Requested-With": "XMLHttpRequest",
+                    "X-CSRF-TOKEN": document
+                        .querySelector('meta[name="csrf-token"]')
+                        .getAttribute("content"),
+                },
+            });
+
+            setNotifications((prev) =>
+                prev.map((n) =>
+                    n.id === id ? { ...n, read_at: new Date() } : n
+                )
+            );
+
+            fetchUnreadCount();
+        } catch (error) {
+            console.error("Erro ao marcar notificação como lida:", error);
+        }
+    };
+
+    /**
+     * Inicial
+     */
+    useEffect(() => {
+        fetchUnreadCount();
+    }, []);
+
+    return (
+        <div className="relative" ref={bellRef}>
+            {/* Bell */}
+            <button
+                onClick={toggleDropdown}
+                className="relative focus:outline-none"
+                title="Notificações"
+            >
+                <HiBell className="h-6 w-6 text-gray-600 hover:text-gray-800 transition-colors" />
+
+                {hasUnread && (
+                    <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500"></span>
+                )}
+            </button>
+
+            {/* Dropdown */}
+            {open && (
+                <div className="absolute right-0 mt-2 w-96 rounded-md bg-white shadow-lg border border-gray-200 z-50">
+                    <div className="px-4 py-2 border-b text-sm font-semibold text-gray-700">
+                        Notificações
+                    </div>
+
+                    <div className="max-h-96 overflow-y-auto">
+                        {notifications.length === 0 && (
+                            <div className="px-4 py-4 text-sm text-gray-500">
+                                Nenhuma notificação.
+                            </div>
+                        )}
+
+                        {notifications.map((notification) => (
+                            <div
+                                key={notification.id}
+                                onClick={() =>
+                                    !notification.read_at &&
+                                    markAsRead(notification.id)
+                                }
+                                className={`px-4 py-3 text-sm cursor-pointer hover:bg-gray-50 border-b ${
+                                    notification.read_at
+                                        ? "text-gray-500"
+                                        : "bg-purple-50 text-gray-800"
+                                }`}
+                            >
+                                {/* Título */}
+                                <div className="font-medium">
+                                    {notification.data.title}
+                                </div>
+
+                                {/* Mensagem */}
+                                <div className="text-xs mt-1 text-gray-600">
+                                    {notification.data.message}
+                                </div>
+
+                                {/* Texto auxiliar */}
+                                {notification.data.helper_text && (
+                                    <div className="text-xs mt-2 text-gray-500 italic">
+                                        {notification.data.helper_text}
+                                    </div>
+                                )}
+
+                                {/* Artigos recomendados */}
+                                {notification.data.articles?.length > 0 && (
+                                    <div className="mt-2">
+                                        <div className="text-xs font-semibold text-gray-500 mb-1">
+                                            Artigos:
+                                        </div>
+
+                                        <ul className="space-y-1">
+                                            {notification.data.articles.map(
+                                                (article) => (
+                                                    <li key={article.id}>
+                                                        <a
+                                                            href={`/articles/${article.id}`}
+                                                            className="text-xs text-purple-600 hover:underline"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                markAsRead(
+                                                                    notification.id
+                                                                );
+                                                            }}
+                                                        >
+                                                            • {article.title}
+                                                        </a>
+                                                    </li>
+                                                )
+                                            )}
+                                        </ul>
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}

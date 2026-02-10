@@ -5,6 +5,8 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import { Transition } from '@headlessui/react';
 import { Link, useForm, usePage } from '@inertiajs/react';
+import { HiUserCircle } from 'react-icons/hi';
+
 
 export default function UpdateProfileInformationForm({
     mustVerifyEmail,
@@ -26,10 +28,10 @@ export default function UpdateProfileInformationForm({
             dependents:
                 existingDependents.length > 0
                     ? existingDependents.map((d) => ({
-                          name: d.name || '',
-                          birth_date: d.birth_date ? d.birth_date.substring(0, 10) : '',
-                          gender: d.gender || '',
-                      }))
+                        name: d.name || '',
+                        birth_date: d.birth_date ? d.birth_date.substring(0, 10) : '',
+                        gender: d.gender || '',
+                    }))
                     : [],
             address: {
                 zip: existingAddress.zip || '',
@@ -131,96 +133,180 @@ export default function UpdateProfileInformationForm({
     return (
         <section className={className}>
             <header>
-                <h2 className="text-lg font-medium text-gray-900">Informações do Perfil</h2>
+                <h2 className="text-xl font-semibold text-gray-900">Informações do seu perfil
+                     <HiUserCircle className="ml-2 inline-block w-8 h-8" />
+                </h2>
                 <p className="mt-1 text-sm text-gray-600">
-                    Atualize seus dados pessoais, endereço e dependentes.
+                    Mantenha sempre seus dados atualizados para aproveitar melhor a plataforma.
                 </p>
             </header>
 
-            <form onSubmit={submit} className="mt-6 space-y-6">
+            <form onSubmit={submit} className="text-lg space-y-6 mt-6 border border-gray-300 p-6 rounded">
+                <legend className="text-lm">Dados do usuário</legend>
                 {/* Nome */}
-                <div>
-                    <InputLabel htmlFor="name" value="Nome" />
-                    <TextInput
-                        id="name"
-                        className="mt-1 block w-full"
-                        value={data.name}
-                        onChange={(e) => setData('name', e.target.value)}
-                        required
-                        isFocused
-                        autoComplete="name"
-                    />
-                    <InputError className="mt-2" message={errors.name} />
-                </div>
-
-                {/* Email */}
-                <div>
-                    <InputLabel htmlFor="email" value="Email" />
-                    <TextInput
-                        id="email"
-                        type="email"
-                        className="mt-1 block w-full"
-                        value={data.email}
-                        onChange={(e) => setData('email', e.target.value)}
-                        required
-                        autoComplete="username"
-                    />
-                    <InputError className="mt-2" message={errors.email} />
-                </div>
-
-                {/* Data de nascimento */}
-                <div>
-                    <InputLabel htmlFor="birth_date" value="Data de nascimento" />
-                    <input
-                        id="birth_date"
-                        type="date"
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                        value={data.birth_date}
-                        onChange={(e) => setData('birth_date', e.target.value)}
-                    />
-                    <InputError className="mt-2" message={errors.birth_date} />
-                </div>
-
-                {/* Quantos filhos */}
-                <div>
-                    <InputLabel htmlFor="children_count" value="Quantos filhos" />
-                    <input
-                        id="children_count"
-                        type="number"
-                        min="0"
-                        max="20"
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                        value={data.children_count}
-                        onChange={(e) =>
-                            setData('children_count', e.target.value !== '' ? parseInt(e.target.value, 10) : 0)
-                        }
-                    />
-                    <InputError className="mt-2" message={errors.children_count} />
-                </div>
-
-                {/* Beneficiário governo */}
-                <div className="flex items-start gap-3">
-                    <div className="flex items-center h-5">
-                        <input
-                            id="government_beneficiary"
-                            type="checkbox"
-                            checked={data.government_beneficiary}
-                            onChange={(e) => setData('government_beneficiary', e.target.checked)}
-                            className="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
+                <div className="mb-3 border-b pb-4 border-purple-300 ">
+                    <div>
+                        <InputLabel htmlFor="name" value="Nome" />
+                        <TextInput
+                            id="name"
+                            className="mt-1 mb-4 block w-full"
+                            value={data.name}
+                            onChange={(e) => setData('name', e.target.value)}
+                            required
+                            isFocused
+                            autoComplete="name"
                         />
+                        <InputError className="mt-2" message={errors.name} />
                     </div>
-                    <div className="text-sm">
-                        <label htmlFor="government_beneficiary" className="font-medium text-gray-700">
-                            Beneficiário(a) de programa do governo?
-                        </label>
-                        <p className="text-gray-500">Marque se você recebe algum benefício governamental.</p>
+
+                    {/* Email */}
+                    <div>
+                        <InputLabel htmlFor="email" value="Email" />
+                        <TextInput
+                            id="email"
+                            type="email"
+                            className="mt-1 mb-4 block w-full"
+                            value={data.email}
+                            onChange={(e) => setData('email', e.target.value)}
+                            required
+                            autoComplete="username"
+                        />
+                        <InputError className="mt-2" message={errors.email} />
+                    </div>
+
+                    {/* Data de nascimento */}
+                    <div>
+                        <InputLabel htmlFor="birth_date" value="Data de nascimento" />
+                        <input
+                            id="birth_date"
+                            type="date"
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                            value={data.birth_date}
+                            onChange={(e) => setData('birth_date', e.target.value)}
+                        />
+                        <InputError className="mt-2" message={errors.birth_date} />
                     </div>
                 </div>
-                <InputError className="mt-2" message={errors.government_beneficiary} />
+
+                <div className='border-b pb-4 border-purple-200'>
+                    <legend className="text-lm">Informações complementares</legend>
+
+                    {/* Beneficiário governo */}
+                    <div className="flex items-start gap-3 mt-4 mb-4">
+                        <div className="flex items-center h-5">
+                            <input
+                                id="government_beneficiary"
+                                type="checkbox"
+                                checked={data.government_beneficiary}
+                                onChange={(e) => setData('government_beneficiary', e.target.checked)}
+                                className="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
+                            />
+                        </div>
+                        <div className="text-sm">
+                            <label htmlFor="government_beneficiary" className="font-medium text-gray-700">
+                                Beneficiário(a) de programa do governo?
+                            </label>
+                            <p className="text-gray-500">Marque se você recebe algum benefício governamental.</p>
+                        </div>
+                    </div>
+                    <InputError className="mt-2" message={errors.government_beneficiary} />
+
+                    {/* Quantos filhos */}
+                    <div className="mt-4">
+                        <InputLabel htmlFor="children_count" value="Quantidade de filhos" />
+                        <input
+                            id="children_count"
+                            type="number"
+                            min="0"
+                            max="20"
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                            value={data.children_count}
+                            onChange={(e) =>
+                                setData('children_count', e.target.value !== '' ? parseInt(e.target.value, 10) : 0)
+                            }
+                        />
+                        <InputError className="mt-2" message={errors.children_count} />
+                    </div>
+                </div>
+
+
+                {/* === Dependentes === */}
+                <fieldset className="mt-6 p-4 border-b border-purple-300 ">
+                    <legend className="text-sm font-medium text-gray-700">Filhos</legend>
+
+                    {/* instrução */}
+                    <p className="text-sm text-gray-500 mb-3">
+                        Os campos abaixo serão gerados automaticamente conforme o número de filhos informado.
+                    </p>
+
+                    {Array.from({ length: Number(data.children_count) || 0 }).map((_, index) => (
+                        <div key={index} className="mt-4 p-3 border rounded-md bg-gray-50">
+                            <div className="flex items-center justify-between">
+                                <h3 className="text-sm font-semibold text-gray-700">Filho {index + 1}</h3>
+                                <p className="text-xs text-gray-500">Preencha nome, data de nascimento e sexo</p>
+                            </div>
+
+                            <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                {/* Nome */}
+                                <div>
+                                    <InputLabel htmlFor={`dependents.${index}.name`} value="Nome" />
+                                    <TextInput
+                                        id={`dependents.${index}.name`}
+                                        className="mt-1 block w-full"
+                                        value={(data.dependents?.[index]?.name) || ''}
+                                        onChange={(e) => updateDependentField(index, 'name', e.target.value)}
+                                    />
+                                    <InputError className="mt-2" message={errors?.[`dependents.${index}.name`]} />
+                                </div>
+
+                                {/* Data de nascimento */}
+                                <div>
+                                    <InputLabel htmlFor={`dependents.${index}.birth_date`} value="Data de nascimento" />
+                                    <input
+                                        id={`dependents.${index}.birth_date`}
+                                        type="date"
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                                        max={new Date().toISOString().split('T')[0]}
+                                        min={new Date(
+                                            new Date().setFullYear(new Date().getFullYear() - 18)
+                                        ).toISOString().split('T')[0]}
+                                        value={(data.dependents?.[index]?.birth_date) || ''}
+                                        onChange={(e) => updateDependentField(index, 'birth_date', e.target.value)}
+                                    />
+
+                                    <InputError className="mt-2" message={errors?.[`dependents.${index}.birth_date`]} />
+                                </div>
+
+                                {/* Sexo */}
+                                <div>
+                                    <InputLabel htmlFor={`dependents.${index}.gender`} value="Sexo" />
+                                    <select
+                                        id={`dependents.${index}.gender`}
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                                        value={(data.dependents?.[index]?.gender) || ''}
+                                        onChange={(e) => updateDependentField(index, 'gender', e.target.value)}
+                                    >
+                                        <option value="">Selecione</option>
+                                        <option value="Masculino">Masculino</option>
+                                        <option value="Feminino">Feminino</option>
+                                        <option value="Outro">Outro</option>
+                                    </select>
+                                    <InputError className="mt-2" message={errors?.[`dependents.${index}.gender`]} />
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+
+                    {(!data.children_count || Number(data.children_count) === 0) && (
+                        <p className="text-sm text-gray-500 mt-2">
+                            Informe o número de filhos acima no campo "Quantidade de filhos" para preencher os dados.
+                        </p>
+                    )}
+                </fieldset>
 
                 {/* === Endereço (CEP primeiro + lupa) === */}
-                <fieldset className="mt-4 p-4 border rounded-md">
-                    <legend className="text-sm font-medium text-gray-700">Endereço</legend>
+                <fieldset className="mt-4 p-4 border-b border-purple-300 rounded-md">
+                    <legend className="text-lm ">Endereço</legend>
 
                     {/* CEP + lupa */}
                     <div className="mt-3 grid grid-cols-1 sm:grid-cols-6 gap-3 items-end">
@@ -313,77 +399,16 @@ export default function UpdateProfileInformationForm({
                     </div>
                 </fieldset>
 
-                {/* === Dependentes === */}
-                <fieldset className="mt-6 p-4 border rounded-md">
-                    <legend className="text-sm font-medium text-gray-700">Filhos</legend>
 
-                    {/* instrução */}
-                    <p className="text-sm text-gray-500 mb-3">
-                        Os campos abaixo serão gerados automaticamente conforme o número de filhos informado.
-                    </p>
-
-                    {Array.from({ length: Number(data.children_count) || 0 }).map((_, index) => (
-                        <div key={index} className="mt-4 p-3 border rounded-md bg-gray-50">
-                            <div className="flex items-center justify-between">
-                                <h3 className="text-sm font-semibold text-gray-700">Filho {index + 1}</h3>
-                                <p className="text-xs text-gray-500">Preencha nome, data de nascimento e sexo</p>
-                            </div>
-
-                            <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                {/* Nome */}
-                                <div>
-                                    <InputLabel htmlFor={`dependents.${index}.name`} value="Nome" />
-                                    <TextInput
-                                        id={`dependents.${index}.name`}
-                                        className="mt-1 block w-full"
-                                        value={(data.dependents?.[index]?.name) || ''}
-                                        onChange={(e) => updateDependentField(index, 'name', e.target.value)}
-                                    />
-                                    <InputError className="mt-2" message={errors?.[`dependents.${index}.name`]} />
-                                </div>
-
-                                {/* Data de nascimento */}
-                                <div>
-                                    <InputLabel htmlFor={`dependents.${index}.birth_date`} value="Data de nascimento" />
-                                    <input
-                                        id={`dependents.${index}.birth_date`}
-                                        type="date"
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                                        value={(data.dependents?.[index]?.birth_date) || ''}
-                                        onChange={(e) => updateDependentField(index, 'birth_date', e.target.value)}
-                                    />
-                                    <InputError className="mt-2" message={errors?.[`dependents.${index}.birth_date`]} />
-                                </div>
-
-                                {/* Sexo */}
-                                <div>
-                                    <InputLabel htmlFor={`dependents.${index}.gender`} value="Sexo" />
-                                    <select
-                                        id={`dependents.${index}.gender`}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                                        value={(data.dependents?.[index]?.gender) || ''}
-                                        onChange={(e) => updateDependentField(index, 'gender', e.target.value)}
-                                    >
-                                        <option value="">Selecione</option>
-                                        <option value="Masculino">Masculino</option>
-                                        <option value="Feminino">Feminino</option>
-                                        <option value="Outro">Outro</option>
-                                    </select>
-                                    <InputError className="mt-2" message={errors?.[`dependents.${index}.gender`]} />
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-
-                    {(!data.children_count || Number(data.children_count) === 0) && (
-                        <p className="text-sm text-gray-500 mt-2">
-                            Informe o número de filhos acima para preencher os dados.
-                        </p>
-                    )}
-                </fieldset>
-
-                <div className="flex items-center gap-4">
-                    <PrimaryButton disabled={processing}>Salvar</PrimaryButton>
+                <div className="flex items-center gap-4 center justify-center mt-6">
+                    {/* <PrimaryButton disabled={processing}>Salvar</PrimaryButton> */}
+                    <button
+                            type='submit'
+                            disabled={processing}
+                            className="w-[300px] h-auto bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50"
+                        >
+                            {processing ? 'Salvando...' : 'Salvar'}
+                     </button>
 
                     <Transition
                         show={recentlySuccessful}

@@ -10,26 +10,25 @@ class ArticleFavoriteController extends Controller
 {
     public function toggle(Request $request, Article $article)
     {
+        // Usuária autenticada
         $user = $request->user();
 
+        // Busca favorito existente
         $favorite = ArticleFavorite::where('user_id', $user->id)
             ->where('article_id', $article->id)
             ->first();
 
+        // Remove ou cria favorito
         if ($favorite) {
             $favorite->delete();
-            $favorited = false;
         } else {
             ArticleFavorite::create([
-                'user_id' => $user->id,
+                'user_id'    => $user->id,
                 'article_id' => $article->id,
             ]);
-            $favorited = true;
         }
 
-        return response()->json([
-            'favorited' => $favorited,
-            'favorites_count' => $article->favorites()->count(),
-        ]);
+        // Retorno compatível com Inertia
+        return back();
     }
 }

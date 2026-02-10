@@ -22,10 +22,11 @@
 
 
         <!-- VLibras -->
-        <script src="{{ asset('/js/vlibras.js') }}"></script>
+         <script src="{{ asset('/js/vlibras.js') }}"></script>
+        <!-- <script src="{{ asset('/js/vlibras.js') }}"></script>
         <script>
             new window.VLibras.Widget('https://vlibras.gov.br/app');
-        </script>
+        </script> -->
 
     </body>
 </html>

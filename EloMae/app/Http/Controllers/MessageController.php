@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Message;
+use App\Models\Community;
 
 class MessageController extends Controller
 {
@@ -17,6 +18,15 @@ class MessageController extends Controller
             ->where('community_id', $request->community_id)
             ->orderBy('created_at', 'asc')
             ->get();
+
+        $community = Community::find($request->community_id);
+
+        if ($request->user() && $community) {
+            $community->users()
+                ->updateExistingPivot($request->user()->id, [
+                    'last_read_at' => now(),
+                ]);
+        }
 
         return response()->json($messages);
     }

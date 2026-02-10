@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Category;
 use App\Models\ArticleVote;
+use App\Models\ArticleView;
+use App\Models\ArticleFavorite;
+
 
 class ArticleController extends Controller
 {
@@ -68,39 +71,74 @@ class ArticleController extends Controller
             ->with('success', 'Artigo criado com sucesso!');
     }
 
-    public function show(Article $article)
-    {
-        $user = Auth::user();
+  public function show(Article $article)
+{
+    $user = Auth::user();
 
-        $article->loadCount([
-            'votes as helpful_yes' => fn($q) => $q->where('value', 'yes'),
-            'votes as helpful_no' => fn($q) => $q->where('value', 'no'),
-        ]);
+    /*
+     Registrar visualização do artigo
+    */
 
-        $userVote = null;
-
-        if ($user) {
-            $userVote = $article->votes()
-                ->where('user_id', $user->id)
-                ->value('value');
-        }
-
-        return Inertia::render('Articles/Show', [
-            'article' => $article->load('author', 'favorites'),
-            'userVote' => $userVote,
-            'favoritesCount' => $article->favorites()->count(),
-            'userFavorited' => $user ? $article->favoritedBy()->where('user_id', $user->id)->exists() : false,
-        ]);
+    if ($user) {
+        ArticleView::updateOrCreate(
+            [
+                'user_id'    => $user->id,
+                'article_id' => $article->id,
+            ],
+            [
+                'read_at' => now(),
+            ]
+        );
     }
 
-    public function edit(Article $article)
-    {
-        $this->authorize('update', $article);
+    /*
+    | Contagem de votos de utilidade
+    */
+    $article->loadCount([
+        'votes as helpful_yes' => fn ($q) => $q->where('value', 'yes'),
+        'votes as helpful_no'  => fn ($q) => $q->where('value', 'no'),
+    ]);
 
-        return Inertia::render('Articles/Edit', [
-            'article' => $article
-        ]);
+    /*
+    | Voto da usuária (esse artigo foi útil?)
+    */
+    $userVote = null;
+
+    if ($user) {
+        $userVote = $article->votes()
+            ->where('user_id', $user->id)
+            ->value('value');
     }
+
+    /*
+    | Favoritos (estrela)
+    */
+    $userFavorited = false;
+
+    if ($user) {
+        $userFavorited = ArticleFavorite::where('user_id', $user->id)
+            ->where('article_id', $article->id)
+            ->exists();
+    }
+
+    $favoritesCount = $article->favorites()->count();
+
+    /*
+    | Renderização
+    */
+    return Inertia::render('Articles/Show', [
+        'article' => $article->load([
+            'author',
+            'category',
+        ]),
+        'category_id'    => $article->category_id,
+        'userVote'       => $userVote,
+        'helpful_yes'    => $article->helpful_yes,
+        'helpful_no'     => $article->helpful_no,
+        'favoritesCount' => $favoritesCount,
+        'userFavorited'  => $userFavorited,
+    ]);
+}
 
     public function update(Request $request, Article $article)
     {
@@ -153,3 +191,4 @@ class ArticleController extends Controller
     }
 
 }
+

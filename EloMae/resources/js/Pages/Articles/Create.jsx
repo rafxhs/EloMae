@@ -1,6 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { useForm } from '@inertiajs/react';
 import { Editor } from '@tinymce/tinymce-react';
+import LinkButton from '@/Components/LinkButton';
 
 export default function Create({ auth, categories }) {
     const { data, setData, post, processing, errors } = useForm({
@@ -20,30 +21,17 @@ export default function Create({ auth, categories }) {
     return (
         <AuthenticatedLayout user={auth.user}>
 
-            <div className="max-w-3xl mx-auto py-6">
+            <div className="max-w-4xl mx-auto py-10 relative">
+                <LinkButton
+                    href={route("articles.index")}
+                    className="absolute right-4 flex items-center justify-center"
+                >
+                    Voltar
+                </LinkButton>
+
                 <h1 className="text-2xl font-bold mb-4">Criar Artigo</h1>
 
-                <form onSubmit={submit} className="space-y-4">
-
-                     <div>
-                        <label>Categoria</label>
-                        <select
-                            className="w-full border rounded p-2"
-                            value={data.category_id}
-                            onChange={(e) => setData('category_id', e.target.value)}
-                        >
-                            <option value="">Selecione uma categoria</option>
-                            {categories.map((cat) => (
-                                <option key={cat.id} value={cat.id}>
-                                    {cat.name}
-                                </option>
-                            ))}
-                        </select>
-
-                        {errors.category_id && (
-                            <p className="text-red-500">{errors.category_id}</p>
-                        )}
-                    </div>
+                <form onSubmit={submit} className="text-lg space-y-6 mt-6 border border-gray-300 p-6 rounded">
 
                     <div>
                         <label>Título</label>
@@ -64,6 +52,26 @@ export default function Create({ auth, categories }) {
                             value={data.subtitle}
                             onChange={(e) => setData('subtitle', e.target.value)}
                         />
+                    </div>
+
+                    <div>
+                        <label>Categoria</label>
+                        <select
+                            className="w-full border rounded p-2"
+                            value={data.category_id}
+                            onChange={(e) => setData('category_id', e.target.value)}
+                        >
+                            <option value="">Selecione uma categoria</option>
+                            {categories.map((cat) => (
+                                <option key={cat.id} value={cat.id}>
+                                    {cat.name}
+                                </option>
+                            ))}
+                        </select>
+
+                        {errors.category_id && (
+                            <p className="text-red-500">{errors.category_id}</p>
+                        )}
                     </div>
 
                     <div>
@@ -91,7 +99,7 @@ export default function Create({ auth, categories }) {
 
                     <div>
                         <label>Conteúdo do Artigo</label>
-                        <div className="border rounded">
+                        <div className="border rounded py-2 border-gray-500">
                             <Editor
                                 apiKey="upn2cekie3uitu1npf9iisp2gz4sc26uulghlk52fr1s1aq4"
                                 value={data.content}
@@ -100,16 +108,12 @@ export default function Create({ auth, categories }) {
                                     menubar: false,
                                     entity_encoding: "raw",
                                     entities: "160,nbsp",
-                                    plugins: [
-                                        'advlist autolink lists link image charmap preview anchor',
-                                        'searchreplace visualblocks code fullscreen',
-                                        'insertdatetime media table paste code help wordcount'
-                                    ],
+                                    plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table paste help wordcount',
                                     toolbar:
                                         'undo redo | formatselect | bold italic backcolor | \n' +
                                         'alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help'
                                 }}
-                                onEditorChange={(content, editor) => setData('content', content)}
+                                onEditorChange={(content) => setData('content', content)}
                             />
                         </div>
                         {errors.content && (
@@ -117,12 +121,14 @@ export default function Create({ auth, categories }) {
                         )}
                     </div>
 
-                    <button
-                        disabled={processing}
-                        className="bg-green-600 text-white px-4 py-2 rounded"
-                    >
-                        Salvar
-                    </button>
+                    <div className="flex justify-center">
+                        <button
+                            disabled={processing}
+                            className="w-[500px] bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50 transition"
+                        >
+                            {processing ? 'Salvando...' : 'Criar Artigo'}
+                        </button>
+                    </div>
                 </form>
             </div>
         </AuthenticatedLayout>

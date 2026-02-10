@@ -32,7 +32,9 @@ class Community extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class, 'community_user');
+        return $this->belongsToMany(User::class, 'community_user')
+         ->withPivot('last_read_at')
+        ->withTimestamps();
     }
 
     protected $appends = ['members_count'];
@@ -41,4 +43,6 @@ class Community extends Model
     {
         return $this->users()->count();
     }
+
+
 }

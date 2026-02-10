@@ -10,11 +10,11 @@ class Article extends Model
         'title',
         'subtitle',
         'summary',
-        'content',   
+        'content',
         'author_id',
         'tags',
         'category_id',
-        
+
     ];
 
     public function author()
@@ -40,6 +40,16 @@ class Article extends Model
     public function votes()
     {
         return $this->hasMany(ArticleVote::class);
+    }
+
+    public function developmentPhase()
+{
+    return $this->belongsTo(DevelopmentPhase::class);
+}
+
+    public function views()
+    {
+        return $this->hasMany(ArticleView::class);
     }
 
 }
