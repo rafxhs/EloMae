@@ -1,5 +1,6 @@
 import PrimaryButton from '@/Components/PrimaryButton';
 import { Head, Link } from '@inertiajs/react';
+import ApplicationLogo from "@/Components/ApplicationLogo";
 import {
     UsersIcon,
     BookOpenIcon,
@@ -20,35 +21,38 @@ export default function Welcome({ auth, laravelVersion, phpVersion, articlePrevi
 
     return (
         <>
-            <Head title="Bem-vinda"/>
+            <Head title="Bem-vinda" />
             <div className="bg-neutral-100 text-neutral-900">
                 <div className="relative flex min-h-screen flex-col items-center justify-center">
                     <div className="relative w-full max-w-2xl px-6 lg:max-w-7xl">
-                        <header className="grid grid-cols-2 items-center gap-2 py-10 lg:grid-cols-3">
-                            <div className="flex lg:col-start-2 lg:justify-center">
-
+                        <header className="flex items-center justify-between py-6 px-6">
+                            <div className="flex items-center">
+                                <Link href="/images/EloMae-logo.png">
+                                    <ApplicationLogo className="h-10 w-auto" />
+                                </Link>
                             </div>
-                            <nav className="flex flex-1 justify-end gap-3">
+
+                            <nav className="flex gap-4">
                                 {auth.user ? (
                                     <Link
                                         href={route('dashboard')}
                                         className="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20]"
                                     >
-                                        Dashboard
+                                        Home
                                     </Link>
                                 ) : (
                                     <>
                                         <Link
                                             href={route('login')}
-                                            className="px-4 py-2 rounded-lg border border-primary-500 text-primary-500 text-sm font-medium hover:bg-primary-50 transition"
+                                            className="w-[150px] h-[44px] px-4 py-2 rounded-lg border border-primary-500 text-primary-500 text-sm font-medium hover:bg-primary-50 transition"
                                         >
-                                            Entrar
+                                            <span className='flex items-center justify-center text-primary-500 text-lg'>Entrar</span>
                                         </Link>
                                         <Link
                                             href={route('register')}
-                                            className="px-4 py-2 rounded-lg bg-primary-500 text-white text-sm font-medium hover:bg-primary-400 transition"
+                                            className="w-[150px] h-[44px] px-4 py-2 rounded-lg bg-primary-500 text-white text-sm font-medium hover:bg-primary-400 transition"
                                         >
-                                            Cadastre-se
+                                            <span className='flex items-center justify-center text-white text-lg'>Cadastre-se</span>
                                         </Link>
                                     </>
                                 )}
@@ -65,20 +69,22 @@ export default function Welcome({ auth, laravelVersion, phpVersion, articlePrevi
                                         </h1>
 
                                         <p className='text text-justify font-medium leading-relaxed'>
-                                            O EloMãe é uma plataforma criada para apoiar mães 
+                                            O EloMãe é uma plataforma criada para apoiar mães
                                             com informações confiáveis, suporte emocional e acesso
                                             a redes de apoio perto de você.
                                         </p>
 
+                                        <div className='pt-10'>
 
-                                        <PrimaryButton className="">
-                                            <Link
-                                                href={route("register")}
-                                                className="text-sm font-medium text-neutral-100 focus:outline-none"
-                                            >
-                                                Comece Agora
-                                            </Link>
-                                        </PrimaryButton>
+                                            <PrimaryButton>
+                                                <Link
+                                                    href={route("register")}
+                                                    className="text-sm font-medium text-neutral-100 focus:outline-none"
+                                                >
+                                                    Comece Agora
+                                                </Link>
+                                            </PrimaryButton>
+                                        </div>
                                     </div>
 
                                     <div className='absolute right-0 top-0 h-full w-1/2 flex justify-end'>
@@ -93,7 +99,7 @@ export default function Welcome({ auth, laravelVersion, phpVersion, articlePrevi
                                 <section className="mt-20 space-y-10">
                                     <div className="text-center py-8 space-y-3">
                                         <h2 className="text-3xl font-semibold text-neutral-900">
-                                            Tudo o que você procura em um só lugar
+                                            Todo suporte que você <span className='text-primary-700 font-extrabold'>Mãe</span> procura em um só lugar
                                         </h2>
 
                                         <p className="text-neutral-700 max-w-2xl mx-auto">

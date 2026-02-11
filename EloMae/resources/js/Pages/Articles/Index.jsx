@@ -25,17 +25,18 @@ export default function Index() {
                 {user && user.is_admin ? (
                     <LinkButton
                         href={route("articles.create")}
-                        className="absolute left-4 flex items-center justify-center"
+                        className="absolute left-4 flex items-center justify-center gap-2"
                     >
                         <HiPlus className="h-6 w-6" />
+                        <span>Adicionar Artigo</span>
                     </LinkButton>
                 ) : null}
 
             <Head title="Artigos" />
 
-                <div className="flex items-center justify-between gap-10 mb-6 mt-6 border-b pb-4 shadow-lg">
+                <div className="flex items-center justify-between gap-10 my-10 border-x rounded-lg p-8 shadow-md">
                     <div className="max-w-md">
-                        <h1 className="text-3xl font-bold text-purple-600">
+                        <h1 className="text-3xl font-extrabold text-primary-700">
                             Artigos
                         </h1>
                         <p className="mt-2 text-gray-600">
@@ -55,13 +56,13 @@ export default function Index() {
                     <div className="relative bg-gray-200 rounded-lg mt-4 flex-[1]">
                         <input
                             type="text"
-                            placeholder="Pesquisar artigos..."
+                            placeholder="Pesquisar artigo"
                             className="pl-2 pr-8 py-2 w-full bg-gray-200 text-gray-700 text-sm rounded-lg border-gray-300 focus:outline-none focus:ring-0"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
                         <button type="submit">
-                            <HiSearch className="absolute pr-2 right-0 top-1/2 -translate-y-1/2 hover:text-gray-300 h-8 w-8" />
+                            <HiSearch className="absolute pr-2 right-0 top-1/2 -translate-y-1/2 text-neutral-800 hover:text-neutral-700 h-8 w-8" />
                         </button>
                     </div>
 
@@ -94,11 +95,11 @@ export default function Index() {
                         <div className="text-center text-gray-500 py-10 border hover:text-gray-500 rounded bg-white shadow flex flex-col items-center gap-4">
                             <HiSearch className="h-12 w-12 text-gray-400" />
 
-                            <p>
-                                Ops!... Nenhum artigo encontrado para sua
+                            <p className="font-semibold text-neutral-700">
+                                Nenhum artigo encontrado para sua
                                 pesquisa.
                             </p>
-                            <p>
+                            <p className="text-neutral-600">
                                 Tente pesquisar por categoria, tags ou use o
                                 filtro de pesquisa.
                             </p>

@@ -120,7 +120,7 @@ export default function Index() {
                     <aside className=" border-r border-gray-300 h-screen overflow-y-auto">
                         <div className="py-4 px-4">
                             <div className="flex flex-row justify-between pt-4">
-                                <h1 className="text-3xl font-bold text-gray-900">
+                                <h1 className="text-3xl font-extrabold text-primary-700">
                                     Comunidades
                                 </h1>
 
@@ -216,7 +216,7 @@ export default function Index() {
                             <div className="text-center text-gray-500 py-10 border hover:text-gray-500 rounded bg-white shadow flex flex-col items-center gap-4">
                                 <HiSearch className="h-12 w-12 text-gray-400" />
                                 <p>
-                                    Ops!... Nenhuma comunidade encontrada para
+                                    Nenhuma comunidade encontrada para
                                     sua pesquisa.
                                 </p>
                                 <p>Tente pesquisar um termo diferente.</p>

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { FaStar, FaRegStar } from "react-icons/fa";
 import { AiOutlineSmile, AiOutlineMeh } from "react-icons/ai";
 import LinkButton from "@/Components/LinkButton";
+import { HiArrowLeft } from "react-icons/hi";
 
 export default function Show({
     auth,
@@ -71,11 +72,11 @@ export default function Show({
     return (
         <AuthenticatedLayout user={auth.user}>
             <div className="max-w-4xl mx-auto py-10 p-6 relative shadow-lg">
-                <LinkButton href={route("articles.index")} className="mb-6">
-                    Voltar
-                </LinkButton>
+                <Link href={route("articles.index")} className="text-primary-600">
+                    <HiArrowLeft className="h-7 w-7" />
+                </Link>
 
-                <div className="mb-6 border-b pb-4 border-gray-300">
+                <div className="mb-6 border-b  pb-4 border-gray-300">
                     <div className="flex justify-between items-start gap-4 mb-4 relative">
                         <div className="absolute right-4 flex gap-2 shrink-0 flex-col">
                             <button
@@ -147,7 +148,7 @@ export default function Show({
                     />
                 </div>
 
-                <div className="mt-12 p-6 border border-gray-300 rounded-lg shadow-lg flex flex-col items-center mb-6">
+                <div className="mt-12 p-6 border border-gray-300 rounded-lg flex flex-col items-center mb-6">
                     <p className="text-lg mb-4">Esse artigo foi útil?</p>
 
                     <div className="flex items-center gap-6">
@@ -156,7 +157,7 @@ export default function Show({
                                 size={32}
                                 className={
                                     vote === "yes"
-                                        ? "text-green-600"
+                                        ? "text-secondary-100"
                                         : "text-gray-400"
                                 }
                             />
@@ -167,7 +168,7 @@ export default function Show({
                                 size={32}
                                 className={
                                     vote === "no"
-                                        ? "text-red-600"
+                                        ? "text-secondary-200"
                                         : "text-gray-400"
                                 }
                             />
@@ -176,10 +177,10 @@ export default function Show({
                 </div>
 
                 {isAdmin ? (
-                    <div className="flex gap-2 justify-center mt-6">
+                    <div className="flex gap-2 justify-end mt-6">
                         <Link
                             href={route("articles.edit", article.id)}
-                            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                            className="bg-blue-700 text-white  font-medium px-4 py-2 rounded-lg hover:bg-blue-600"
                         >
                             Editar
                         </Link>
@@ -188,7 +189,7 @@ export default function Show({
                             href={route("articles.destroy", article.id)}
                             method="delete"
                             as="button"
-                            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
+                            className="bg-red-600 text-white font-medium px-4 py-2 rounded-lg hover:bg-red-500"
                             onClick={(e) => {
                                 if (
                                     !confirm(

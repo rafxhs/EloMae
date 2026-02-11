@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { useForm } from '@inertiajs/react';
+import { useForm, Link } from '@inertiajs/react';
 import { Editor } from '@tinymce/tinymce-react';
-import LinkButton from '@/Components/LinkButton';
+import { HiArrowLeft } from "react-icons/hi";
 
 export default function Create({ auth, categories }) {
     const { data, setData, post, processing, errors } = useForm({
@@ -22,15 +22,14 @@ export default function Create({ auth, categories }) {
         <AuthenticatedLayout user={auth.user}>
 
             <div className="max-w-4xl mx-auto py-10 relative">
-                <LinkButton
-                    href={route("articles.index")}
-                    className="absolute right-4 flex items-center justify-center"
-                >
-                    Voltar
-                </LinkButton>
+                <div className="relative flex items-center justify-center mb-6">
+                    <Link href={route("articles.index")} className="absolute left-0 text-primary-600">
+                        <HiArrowLeft className="h-7 w-7" />
+                    </Link>
 
-                <h1 className="text-2xl font-bold mb-4">Criar Artigo</h1>
-
+                    <h1 className="text-neutral-800 text-2xl font-bold">Novo Artigo</h1>
+                </div>
+                
                 <form onSubmit={submit} className="text-lg space-y-6 mt-6 border border-gray-300 p-6 rounded">
 
                     <div>
@@ -124,9 +123,9 @@ export default function Create({ auth, categories }) {
                     <div className="flex justify-center">
                         <button
                             disabled={processing}
-                            className="w-[500px] bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50 transition"
+                            className="w-full bg-primary-700 text-white px-4 py-2 rounded hover:bg-primary-600 disabled:opacity-50 transition"
                         >
-                            {processing ? 'Salvando...' : 'Criar Artigo'}
+                            {processing ? 'Salvando' : 'Criar Artigo'}
                         </button>
                     </div>
                 </form>

@@ -3,6 +3,10 @@ import { Head, Link, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import axios from 'axios';
 import LinkButton from '@/Components/LinkButton';
+import { HiDotsVertical, HiArrowLeft } from "react-icons/hi";
+import CommunityDots from '@/Components/Community/CommunityDots';
+import Dropdown from '@/Components/Community/CommunityDropdown';
+
 
 export default function Show() {
     const { auth, community } = usePage().props;
@@ -40,13 +44,31 @@ export default function Show() {
         <AuthenticatedLayout>
             <Head title={community.nome} />
 
-            <div className="max-w-4xl mx-auto py-10 p-6 relative shadow-lg bg-white rounded-lg">
-                <LinkButton
-                    href={route('communities.index')}
-                    className="absolute right-4 flex items-center justify-center"
-                >
-                    Voltar
-                </LinkButton>
+            <div className="max-w-5xl mx-auto py-10 p-6 relative shadow-lg bg-white rounded-lg">
+
+                <div className='flex items-center justify-between pb-8'>
+                    <Link href={route("communities.index")} className="text-primary-600">
+                        <HiArrowLeft className="h-7 w-7" />
+                    </Link>
+
+                    <Dropdown>
+                        <Dropdown.Trigger>
+                            <button className="p-2 rounded-full hover:bg-gray-100 transition">
+                                <HiDotsVertical className="w-6 h-6" />
+                            </button>
+                        </Dropdown.Trigger>
+
+                        <Dropdown.Content align="right" width="48">
+                            <button
+                                onClick={() => setShowConfirmModal(true)}
+                                className="block w-full px-4 py-2 text-left text-sm text-secondary-200 font-medium  hover:bg-red-50 transition"
+                            >
+                                Sair da comunidade
+                            </button>
+                        </Dropdown.Content>
+                    </Dropdown>
+
+                </div>
 
                 <div className="mb-6 border-b pb-4 border-gray-300">
                     <h1 className="text-3xl font-bold text-gray-800">{community.nome}</h1>
@@ -59,7 +81,7 @@ export default function Show() {
                     <img
                         src="/images/community-default.jpg"
                         alt={`Foto da comunidade ${community.nome}`}
-                        className="rounded-lg w-full max-w-md"
+                        className="rounded-lg w-full max-w-xs"
                     />
                 </div>
 
@@ -86,20 +108,11 @@ export default function Show() {
                     </p>
                 </div>
 
-                <div className="mb-6">
-                    <button
-                        onClick={() => setShowConfirmModal(true)}
-                        className="bg-red-500 text-white px-5 py-2.5 rounded-lg font-medium hover:bg-red-600 transition"
-                    >
-                        Sair da comunidade
-                    </button>
-                </div>
-
                 {user && user.is_admin ? (
-                    <div className="flex gap-2 justify-center mt-6">
+                    <div className="flex gap-2 justify-end mt-6">
                         <Link
                             href={route('communities.edit', community.id)}
-                            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 whitespace-nowrap text-center"
+                            className="bg-blue-700 text-white  font-medium px-4 py-2 rounded-lg hover:bg-blue-600 whitespace-nowrap text-center"
                         >
                             Editar
                         </Link>
@@ -107,7 +120,7 @@ export default function Show() {
                             href={route('communities.destroy', community.id)}
                             method="delete"
                             as="button"
-                            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 whitespace-nowrap"
+                            className="bg-red-600 text-white font-medium px-4 py-2 rounded-lg hover:bg-red-500 whitespace-nowrap"
                             onClick={(e) => {
                                 if (!confirm('Tem certeza que deseja excluir esta comunidade?')) {
                                     e.preventDefault();
@@ -117,7 +130,7 @@ export default function Show() {
                             Excluir
                         </Link>
                     </div>
-                ): null}
+                ) : null}
             </div>
 
             {/* Modal de confirmação */}

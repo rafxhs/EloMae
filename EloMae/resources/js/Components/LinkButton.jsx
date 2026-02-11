@@ -12,7 +12,7 @@ export default function LinkButton({
         <Link
             {...props}
             className={clsx(
-                'inline-block px-4 py-2 rounded-lg bg-purple-500 !text-white text-center font-semibold text-sm shadow',
+                'inline-block px-4 py-2 rounded-lg bg-primary-600 !text-white text-center font-semibold text-sm shadow',
                 'hover:bg-purple-400 transition',
                 active
                     ? 'border-indigo-400'
