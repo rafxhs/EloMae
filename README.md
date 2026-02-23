@@ -8,13 +8,14 @@ O público-alvo do aplicativo são mulheres que enfrentam a maternidade, especia
 ## 🔧 Funcionalidades
 ### 1. Informações e Direitos
 - Direitos das mães (licença maternidade, guarda, pensão, prioridade em creches, etc.).
+- Informaçõaes sobre as fases de desenvolvimento da criança (introdução alimentar, sono, primeiros passos, etc.).
 - Benefícios governamentais (Bolsa Família, Auxílio Brasil, creche gratuita, isenções, etc.).
 - Modelos de documentos (guarda, medida protetiva, pensão, etc.).
 
 ### 2. Comunidades
 - Chat global anônimo.
 - Fórum ou mural de apoio para troca de experiências, desabafos e dicas.
-- Permite envio de imagens nos chats das comunidades.
+- Permite envio de mensagens nos chats das comunidades.
 - Grupos temáticos, como "Mães de primeira viagem", "Empreendedoras", "Mães estudantes", etc.
 - Histórias inspiradoras enviadas por usuárias.
 
@@ -22,14 +23,12 @@ O público-alvo do aplicativo são mulheres que enfrentam a maternidade, especia
 - Mapa com instituições de apoio (CRAS, Delegacia da Mulher, ONGs, creches públicas, etc.).
 - Permite pesquisar locais de apoio próximos à localização da usuária.
 
-### 4. Calendário de Lembretes
-- Calendário que permite criar/organizar lembretes para consultas médicas, datas de pagamento de benefício, audiências, etc.
-- Recebimento de notificações para notificar lembretes em aberto.
+### 4. Notificações de Faseses do Desenvolvimento
+- Quando a criança atinge uma nova fase em seu desenvolvimento a usuária recebe uma notificação.
+- Nela contém sugestão de artigos dentro da plataforma relacionados a essa nova fase.
 
 ### 5. Perfil da Usuária
-- Cadastro básico (nome, idade, quantos filhos, etc.).
-- Preferências de conteúdo.
-- Histórico de tópicos salvos ou visualizados.
+- Cadastro básico: informações pessoais, sobre os dependendes, endereço, etc.
 
 ## 🛠️ Tecnologias Utilizadas
 Este projeto será desenvolvido utilizando:
