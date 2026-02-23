@@ -23,7 +23,7 @@ O público-alvo do aplicativo são mulheres que enfrentam a maternidade, especia
 - Mapa com instituições de apoio (CRAS, Delegacia da Mulher, ONGs, creches públicas, etc.).
 - Permite pesquisar locais de apoio próximos à localização da usuária.
 
-### 4. Notificações de Faseses do Desenvolvimento
+### 4. Notificações de Fases do Desenvolvimento
 - Quando a criança atinge uma nova fase em seu desenvolvimento a usuária recebe uma notificação.
 - Nela contém sugestão de artigos dentro da plataforma relacionados a essa nova fase.
 
