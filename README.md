@@ -1,6 +1,6 @@
 # 👩‍👧 EloMãe
 ## 📝 Descrição do Projeto
-Este projeto consiste no desenvolvimento de um aplicação web voltado para fornecer suporte informativo, prático e emocional para mulheres que são mães. O objetivo é atender a demandas sociais reais, oferecendo acesso rápido e organizado a informações legais, benefícios sociaise uma comunidade de apoio.
+Este projeto consiste no desenvolvimento de um aplicação web voltado para fornecer suporte informativo, prático e emocional para mulheres que são mães. O objetivo é atender a demandas sociais reais, oferecendo acesso rápido e organizado a informações legais, benefícios sociais e uma comunidade de apoio.
 
 ## 🎯 Público-Alvo
 O público-alvo do aplicativo são mulheres que enfrentam a maternidade, especialmente aquelas em situação de vulnerabilidade social.
